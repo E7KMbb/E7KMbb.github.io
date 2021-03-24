@@ -198,8 +198,6 @@ set_perm &lt;文件名&gt; &lt;所有者&gt; &lt;用户组&gt; &lt;文件权限&
        chmod 权限 文件名
        chcon 上下文 文件名
 
-set_perm_recursive  <目录>                <所有者> <用户组> <目录权限> <文件权限> <上下文> (默认值是: u:object_r:system_file:s0)
-
 set_perm_recursive &lt;目录&gt; &lt;所有者&gt; &lt;用户组&gt; &lt;目录权限&gt; &lt;文件权限&gt; [上下文]
     如果 [上下文] 没有设置，则默认为"u:object_r:system_file:s0"
     对于&lt;目录&gt;中的所有文件，它将调用:
@@ -208,49 +206,49 @@ set_perm_recursive &lt;目录&gt; &lt;所有者&gt; &lt;用户组&gt; &lt;目录
        set_perm 目录 所有者 用户组 目录权限 上下文
 </code></pre></div></div>
 
-<h5 id="easy-replace">Easy Replace<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#easy-replace" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h5>
-<p>You can declare a list of folders you want to directly replace in the variable name <code class="language-plaintext highlighter-rouge">REPLACE</code>. The module installer script will pickup this variable and create <code class="language-plaintext highlighter-rouge">.replace</code> files for you. An example declaration:</p>
+<h5 id="easy-replace">简单的替换<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#easy-replace" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h5>
+<p>您可以在变量名中声明要直接替换的文件夹列表<code class="language-plaintext highlighter-rouge">REPLACE</code>。模块安装程序脚本将提取此变量并创建<code class="language-plaintext highlighter-rouge">.replace</code>文件进行替换。声明示例:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>REPLACE="
 /system/app/YouTube
 /system/app/Bloatware
 "
 </code></pre></div></div>
-<p>The list above will result in the following files being created: <code class="language-plaintext highlighter-rouge">$MODPATH/system/app/YouTube/.replace</code> and <code class="language-plaintext highlighter-rouge">$MODPATH/system/app/Bloatware/.replace</code></p>
+<p>上面的列表将导致创建以下文件: <code class="language-plaintext highlighter-rouge">$MODPATH/system/app/YouTube/.replace</code>和<code class="language-plaintext highlighter-rouge">$MODPATH/system/app/Bloatware/.replace</code></p>
 
-<h4 id="notes">Notes<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#notes" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<h4 id="notes">笔记<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#notes" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
 
 <ul>
-  <li>When your module is downloaded with the Magisk app, <code class="language-plaintext highlighter-rouge">update-binary</code> will be <strong>forcefully</strong> replaced with the latest <a href="https://github.com/topjohnwu/Magisk/blob/master/scripts/module_installer.sh"><code class="language-plaintext highlighter-rouge">module_installer.sh</code></a> to ensure all installer uses up-to-date scripts. <strong>DO NOT</strong> try to add any custom logic in <code class="language-plaintext highlighter-rouge">update-binary</code> as it is pointless.</li>
-  <li>Due to historical reasons, <strong>DO NOT</strong> add a file named <code class="language-plaintext highlighter-rouge">install.sh</code> in your module installer. That specific file was previously used and will be treated differently.</li>
-  <li><strong>DO NOT</strong> call <code class="language-plaintext highlighter-rouge">exit</code> at the end of <code class="language-plaintext highlighter-rouge">customize.sh</code>. The module installer would want to do finalizations.</li>
+  <li>使用Magisk Manager下载模块时，将使用最新的<a href="https://github.com/topjohnwu/Magisk/blob/master/scripts/module_installer.sh"><code class="language-plaintext highlighter-rouge">module_installer.sh</code></a><strong>强制</strong>替换<code class="language-plaintext highlighter-rouge">update-binary</code>，以确保所有安装程序都使用最新的脚本。<strong>不要</strong>不要试图在<code class="language-plaintext highlighter-rouge">update-binary</code>中添加任何自定义逻辑，因为这毫无意义。</li>
+  <li>由于历史原因，<strong>请勿</strong>在模块安装程序中添加名为<code class="language-plaintext highlighter-rouge">install.sh</code>的文件。该文件以前曾被使用过，将被区别对待。</li>
+  <li><strong>不要</strong>在<code class="language-plaintext highlighter-rouge">customize.sh</code>末尾使用<code class="language-plaintext highlighter-rouge">exit</code>。模块安装程序将会自行完成。</li>
 </ul>
 
-<h2 id="submit-modules">Submit Modules<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#submit-modules" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="submit-modules">提交模块<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#submit-modules" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
-<p>You can submit a module to <strong>Magisk-Module-Repo</strong> so users can download your module directly in the Magisk app.</p>
+<p>你可以将模块提交到<a href="https://github.com/Magisk-Modules-Repo/submission"><code class="language-plaintext highlighter-rouge">Magisk-Module-Repo</code></a>以便用户可以直接在Magisk Manager中下载你的模块。</p>
 
 <ul>
-  <li>Follow the instructions in the previous section to create a valid installer for your module.</li>
-  <li>Create <code class="language-plaintext highlighter-rouge">README.md</code> (filename should be exactly the same) containing all info for your module. If you are not familiar with the Markdown syntax, the <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown Cheat Sheet</a> will be handy.</li>
-  <li>Create a repository with your personal GitHub account, and upload your module installer to the repo</li>
-  <li>Create a request for submission via this link: <a href="https://github.com/Magisk-Modules-Repo/submission">submission</a></li>
+  <li>请按照上一节中的说明为您的模块创建有效的安装程序。</li>
+  <li>创建<code class="language-plaintext highlighter-rouge">README.md</code> (文件名应该完全相同) ，其中包含模块的所有信息。如果你不熟悉Markdown语法，那么<a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown备忘录</a>将会非常方便</li>
+  <li>使用您的个人GitHub帐户创建存储库，然后将模块安装程序上传到存储库</li>
+  <li>通过此链接创建提交请求: <a href="https://github.com/Magisk-Modules-Repo/submission">提交</a></li>
 </ul>
 
-<h2 id="module-tricks">Module Tricks<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#module-tricks" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="module-tricks">模块技巧<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#module-tricks" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
-<h4 id="remove-files">Remove Files<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#remove-files" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
-<p>How to remove a file systemless-ly? To actually make the file <em>disappear</em> is complicated (possible, not worth the effort). Replacing it with a dummy file should be good enough! Create an empty file with the same name and place it in the same path within a module, it shall replace your target file with a dummy file.</p>
+<h4 id="remove-files">删除文件<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#remove-files" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<p>如何自动删除文件？实际使文件删除很复杂(可能，不值得付出努力)。用空文件替换它应该已经足够了！创建一个具有相同名称的空文件，并将其放置在模块内的相同路径中，它将用空文件替换你的目标文件。</p>
 
-<h4 id="remove-folders">Remove Folders<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#remove-folders" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
-<p>Same as mentioned above, actually making the folder <em>disappear</em> is not worth the effort. Replacing it with an empty folder should be good enough! A handy trick for module developers is to add the folder you want to remove into the <code class="language-plaintext highlighter-rouge">REPLACE</code> list within <code class="language-plaintext highlighter-rouge">customize.sh</code>. If your module doesn’t provide a corresponding folder, it will create an empty folder, and automatically add <code class="language-plaintext highlighter-rouge">.replace</code> into the empty folder so the dummy folder will properly replace the one in <code class="language-plaintext highlighter-rouge">/system</code>.</p>
+<h4 id="remove-folders">删除文件夹<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#remove-folders" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<p>与上述相同，实际上使文件夹删除是不值得的。用一个空文件夹替换它应该已经足够了！对于模块开发人员来说，一个方便的技巧是将要删除的文件夹添加到<code class="language-plaintext highlighter-rouge">customize.sh</code>中的<code class="language-plaintext highlighter-rouge">REPLACE</code>列表中。如果您的模块没有提供相应的文件夹，它将创建一个空文件夹，并自动将<code class="language-plaintext highlighter-rouge">.replace</code>添加到该空文件夹中，以便虚拟文件夹可以正确替换<code class="language-plaintext highlighter-rouge">/system</code>中的一个文件夹。</p>
 
-<h2 id="boot-scripts">Boot Scripts<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#boot-scripts" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="boot-scripts">启动脚本<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#boot-scripts" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
-<p>In Magisk, you can run boot scripts in 2 different modes: <strong>post-fs-data</strong> and <strong>late_start service</strong> mode.</p>
+<p>在Magisk中，您可以以两种不同的模式运行启动脚本: <strong>post-fs-data</strong>和<strong>late_start service</strong>模式</p>
 
 <ul>
-  <li>post-fs-data mode
+  <li>post-fs-data 模式
     <ul>
       <li>This stage is BLOCKING. The boot process is paused before execution is done, or 10 seconds have passed.</li>
       <li>Scripts run before any modules are mounted. This allows a module developer to dynamically adjust their modules before it gets mounted.</li>
