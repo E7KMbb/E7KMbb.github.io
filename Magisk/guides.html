@@ -1,0 +1,351 @@
+<!DOCTYPE html><html lang="en" class=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="stylesheet" type="text/css" href="cid:css-007f2e1b-8792-40a9-a043-1f713b16b012@mhtml.blink" />
+    
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Developer Guides | Magisk</title>
+<meta name="generator" content="Jekyll v3.9.0">
+<meta property="og:title" content="Developer Guides">
+<meta property="og:locale" content="en_US">
+<meta name="description" content="The Magic Mask for Android">
+<meta property="og:description" content="The Magic Mask for Android">
+<link rel="canonical" href="https://topjohnwu.github.io/Magisk/guides.html">
+<meta property="og:url" content="https://topjohnwu.github.io/Magisk/guides.html">
+<meta property="og:site_name" content="Magisk">
+<meta name="twitter:card" content="summary">
+<meta property="twitter:title" content="Developer Guides">
+
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="https://topjohnwu.github.io/Magisk/assets/css/style.css?v=336f1687c12c954161f72aa123bb1feb258146f9">
+  <link type="text/css" rel="stylesheet" charset="UTF-8" href="https://translate.googleapis.com/translate_static/css/translateelement.css"></head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://topjohnwu.github.io/Magisk/">Magisk</a></h1>
+      
+
+      <h1 id="developer-guides">开发者指南</h1>
+
+<h2 id="busybox">BusyBox<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#busybox" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>Magisk附带了功能完整的BusyBox二进制文件(包括对SELinux的完整支持)。执行文件位于<code class="language-plaintext highlighter-rouge">/data/adb/magisk/busybox</code>。Magisk的BusyBox支持运行时可切换的“ASH Standalone Shell Mode(ASH独立Shell模式)”。这种独立模式的意思是，在<code class="language-plaintext highlighter-rouge">ash</code>shell的中的BusyBox运行时，无论设置为什么<code class="language-plaintext highlighter-rouge">PATH</code>，每个命令都将直接使用BusyBox中的应用(子命令)。例如，就像<code class="language-plaintext highlighter-rouge">ls</code>，<code class="language-plaintext highlighter-rouge">rm</code>，<code class="language-plaintext highlighter-rouge">chmod</code> 命令一样。它们将<strong>不在</strong>使用<code class="language-plaintext highlighter-rouge">PATH</code>(在Android中，默认为<code class="language-plaintext highlighter-rouge">/system/bin/ls</code>，<code class="language-plaintext highlighter-rouge">/system/bin/rm</code>，和<code class="language-plaintext highlighter-rouge">/system/bin/chmod</code>。)，而是直接调用Magisk内部的BusyBox应用(子命令)。这样可以确保脚本始终在可预测的环境中运行，并且无论运行在哪个Android版本上，始终具有完整的命令集。要强制命令<em>不使用</em>BusyBox，必须使用完整路径调用可执行文件。</p>
+
+<p>在启用了<code class="language-plaintext highlighter-rouge">ash</code>的独立模式的情况下，Magisk中运行的每个单独的shell脚本都将在内部的BusyBox的shell中执行。对于与第三方开发者而言，这包括所有引导脚本和模块安装脚本。</p>
+
+<p>对于那些想在Magisk之外使用此“独立模式”功能的人，有两种启用它的方法:</p>
+
+<ol>
+  <li>将环境变量<code class="language-plaintext highlighter-rouge">ASH_STANDALONE</code>设置为<code class="language-plaintext highlighter-rouge">1</code><br>示例: <code class="language-plaintext highlighter-rouge">ASH_STANDALONE=1 /data/adb/magisk/busybox sh &lt;script&gt;</code></li>
+  <li>切换命令行选项:<br><code class="language-plaintext highlighter-rouge">/data/adb/magisk/busybox sh -o standalone &lt;script&gt;</code></li>
+</ol>
+
+<p>为确保所有后续的<code class="language-plaintext highlighter-rouge">sh</code>执行的shell也都以独立模式运行，推荐使用1方案(这是Magisk和Magisk应用程序内部使用的方法)，因为环境变量一直继承到子进程。</p>
+
+<h2 id="magisk-modules">Magisk模块<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#magisk-modules" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<p>Magisk模块的文件在<code class="language-plaintext highlighter-rouge">/data/adb/modules</code>中具有以下结构:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/data/adb/modules
+├── .
+├── .
+|
+├── $MODID                  &lt;--- 该文件夹以模块的ID命名
+│   │
+│   │      *** 模块ID ***
+│   │
+│&nbsp;&nbsp; ├── module.prop         &lt;--- 该文件存储模块的基本信息
+│   │
+│   │      *** 主要内容 ***
+│   │
+│&nbsp;&nbsp; ├── system              &lt;--- 如果skip_mount不存在，则将挂载此文件夹
+│&nbsp;&nbsp; │&nbsp;&nbsp; ├── ...
+│&nbsp;&nbsp; │&nbsp;&nbsp; ├── ...
+│&nbsp;&nbsp; │&nbsp;&nbsp; └── ...
+│   │
+│   │      *** 状态标志 ***
+│   │
+│&nbsp;&nbsp; ├── skip_mount          &lt;--- 如果存在，Magisk将不会挂载你的system文件夹
+│&nbsp;&nbsp; ├── disable             &lt;--- 如果存在，该模块将被禁用
+│&nbsp;&nbsp; ├── remove              &lt;--- 如果存在，该模块将在下次重新启动时被删除
+│   │
+│   │      *** 可选文件 ***
+│   │
+│&nbsp;&nbsp; ├── post-fs-data.sh     &lt;--- 该脚本将在post-fs-data模式下执行
+│&nbsp;&nbsp; ├── service.sh          &lt;--- 该脚本将在late_start service模式执行
+|   ├── uninstall.sh        &lt;--- 当Magisk删除您的模块时，将执行此脚本
+│&nbsp;&nbsp; ├── system.prop         &lt;--- 该文件中的properties将通过resetprop作为系统properties加载
+│&nbsp;&nbsp; ├── sepolicy.rule       &lt;--- 添加自定义的sepolicy规则
+│&nbsp;&nbsp; │
+│   │      *** 自动生成，请勿手动创建或修改 ***
+│&nbsp;&nbsp; │
+│&nbsp;&nbsp; ├── vendor              &lt;--- 指向$MODID/system/vendor的链接
+│&nbsp;&nbsp; ├── product             &lt;--- 指向$MODID/system/product的链接
+│&nbsp;&nbsp; ├── system_ext          &lt;--- 指向$MODID/system/system_ext的链接
+│   │
+│   │      *** 允许任何其他文件/文件夹 ***
+│   │
+│&nbsp;&nbsp; ├── ...
+│&nbsp;&nbsp; └── ...
+|
+├── another_module
+│&nbsp;&nbsp; ├── .
+│&nbsp;&nbsp; └── .
+├── .
+├── .
+</code></pre></div></div>
+
+<h4 id="moduleprop">module.prop<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#moduleprop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<p>这是<strong>标准的</strong><code class="language-plaintext highlighter-rouge">module.prop</code>格式</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>id=&lt;string&gt;
+name=&lt;string&gt;
+version=&lt;string&gt;
+versionCode=&lt;int&gt;
+author=&lt;string&gt;
+description=&lt;string&gt;
+</code></pre></div></div>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">id</code>必须匹配以下正则表达式: <code class="language-plaintext highlighter-rouge">^[a-zA-Z][a-zA-Z0-9._-]+$</code><br>
+例如: ✓ <code class="language-plaintext highlighter-rouge">a_module</code>, ✓ <code class="language-plaintext highlighter-rouge">a.module</code>, ✓ <code class="language-plaintext highlighter-rouge">module-101</code>, ✗ <code class="language-plaintext highlighter-rouge">a module</code>, ✗ <code class="language-plaintext highlighter-rouge">1_module</code>, ✗ <code class="language-plaintext highlighter-rouge">-a-module</code><br>
+这是模块的<strong>唯一标识ID</strong>。发布后，不应改变它</li>
+  <li><code class="language-plaintext highlighter-rouge">versionCode</code>必须为<strong>整数</strong>。这用于比较版本。</li>
+  <li>上面未提及的其他字符串可以是任何<strong>单行</strong>字符串。</li>
+  <li>请确保使用<code class="language-plaintext highlighter-rouge">UNIX (LF)</code>类型换行符，而不是<code class="language-plaintext highlighter-rouge">Windows (CR+LF)</code>或<code class="language-plaintext highlighter-rouge">Macintosh (CR)</code>。</li>
+</ul>
+
+<h4 id="shell-scripts-sh">Shell脚本(<code class="language-plaintext highlighter-rouge">*.sh</code>)<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#shell-scripts-sh" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<p>请阅读<a href="https://topjohnwu.github.io/Magisk/guides.html#boot-scripts">启动脚本</a>部分，了解<code class="language-plaintext highlighter-rouge">post-fs-data.sh</code>与<code class="language-plaintext highlighter-rouge">service.sh</code>之间的差异。对于大多数模块开发者，<code class="language-plaintext highlighter-rouge">service.sh</code>如果只需运行启动脚本那便足够了。</p>
+
+<p>在所有的模块脚本中，请使用<code class="language-plaintext highlighter-rouge">MODDIR=${0%/*}</code>来获取模块的基本目录信息;千万<strong>不要</strong>在脚本中编码模块目录。</p>
+
+<h4 id="systemprop">system.prop<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#systemprop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<p>该文件的格式与<code class="language-plaintext highlighter-rouge">build.prop</code>相同。每行包含<code class="language-plaintext highlighter-rouge">[key]=[value]</code>。</p>
+
+<h4 id="sepolicyrule">sepolicy.rule<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#sepolicyrule" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<p>如果您的模块需要一些其他的sepolicy补丁，请将这些规则添加到此文件中。 模块安装程序脚本和Magisk的守护进程将确保将此文件复制到<code class="language-plaintext highlighter-rouge">magiskinit</code>，它可以读取预初始化的位置，以确保正确插入这些规则。</p>
+
+<p>该文件中的每一行都将被视为策略声明。要详细了解策略声明的格式，请查看<a href="https://e7kmbb.github.io/Magisk/tools.html#magiskpolicy">magiskpolicy</a>的文档</p>
+
+<h4 id="the-system-folder"><code class="language-plaintext highlighter-rouge">system</code>文件夹<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#the-system-folder" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<p>您希望Magisk为您替换/插入的所有文件都应放在此文件夹中。请查看<a href="https://e7kmbb.github.io/Magisk/details.html#magic-mount">Magic挂载</a> 部分，以了解Magisk如何挂载文件。</p>
+
+<h2 id="magisk-module-installer">Magisk模块安装程序<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#magisk-module-installer" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Magisk模块安装程序是打包成zip文件的Magisk模块，可以在Magisk应用程序或第三方recovery(如TWRP)中进行刷入。安装程序的文件结构与Magisk模块的文件结构相同(请查看上一部分以获取更多信息)。最简单的Magisk模块安装程序只是一个打包为zip文件的Magisk模块，此外还包含以下文件:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">update-binary</code>: 下载最新的<a href="https://github.com/topjohnwu/Magisk/blob/master/scripts/module_installer.sh">module_installer.sh</a>并重命名/复制为<code class="language-plaintext highlighter-rouge">update-binary</code></li>
+  <li><code class="language-plaintext highlighter-rouge">updater-script</code>: 此文件应仅包含字符串<code class="language-plaintext highlighter-rouge">#MAGISK</code></li>
+</ul>
+
+<p>默认情况下，<code class="language-plaintext highlighter-rouge">update-binary</code>将检查/设置环境，加载使用的脚本，将模块安装程序的zip解压缩到将要安装模块的位置，最后执行一些琐碎的任务和清理工作，这些工作和清理应满足大多数简单模块的需求。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>module.zip
+│
+├── META-INF
+│&nbsp;&nbsp; └── com
+│&nbsp;&nbsp;  &nbsp;&nbsp; └── google
+│&nbsp;&nbsp;  &nbsp;&nbsp;  &nbsp;&nbsp; └── android
+│&nbsp;&nbsp;  &nbsp;&nbsp;  &nbsp;&nbsp;  &nbsp;&nbsp; ├── update-binary      &lt;--- 你下载的module_installer.sh
+│&nbsp;&nbsp;  &nbsp;&nbsp;  &nbsp;&nbsp;  &nbsp;&nbsp; └── updater-script     &lt;--- 应该只包含字符串"#MAGISK"
+│
+├── customize.sh                       &lt;--- (可选，稍后会有更多详细信息)
+│                                           该脚本将通过update-binary来获取
+├── ...
+├── ...  /* 模块的其余文件 */
+│
+</code></pre></div></div>
+
+<h4 id="customization">customize.sh<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#customization" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<p>如果您需要自定义模块安装过程，则可以选择在安装程序中创建一个名为<code class="language-plaintext highlighter-rouge">customize.sh</code>的脚本。This script will be <em>sourced</em> (not executed!) by <code class="language-plaintext highlighter-rouge">update-binary</code> after all files are extracted and default permissions and secontext are applied. This is very useful if your module includes different files based on ABI, or you need to set special permissions/secontext for some of your files (e.g. files in <code class="language-plaintext highlighter-rouge">/system/bin</code>).</p>
+
+<p>If you need even more customization and prefer to do everything on your own, declare <code class="language-plaintext highlighter-rouge">SKIPUNZIP=1</code> in <code class="language-plaintext highlighter-rouge">customize.sh</code> to skip the extraction and applying default permissions/secontext steps. Be aware that by doing so, your <code class="language-plaintext highlighter-rouge">customize.sh</code> will then be responsible to install everything by itself.</p>
+
+<h4 id="customizesh-environment"><code class="language-plaintext highlighter-rouge">customize.sh</code> Environment<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#customizesh-environment" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<p>This script will run in Magisk’s BusyBox <code class="language-plaintext highlighter-rouge">ash</code> shell with “Standalone Mode” enabled. The following variables and shell functions are available for convenience:</p>
+
+<h5 id="variables">Variables<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#variables" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h5>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">MAGISK_VER</code> (string): the version string of current installed Magisk (e.g. <code class="language-plaintext highlighter-rouge">v20.0</code>)</li>
+  <li><code class="language-plaintext highlighter-rouge">MAGISK_VER_CODE</code> (int): the version code of current installed Magisk (e.g. <code class="language-plaintext highlighter-rouge">20000</code>)</li>
+  <li><code class="language-plaintext highlighter-rouge">BOOTMODE</code> (bool): <code class="language-plaintext highlighter-rouge">true</code> if the module is being installed in the Magisk app</li>
+  <li><code class="language-plaintext highlighter-rouge">MODPATH</code> (path): the path where your module files should be installed</li>
+  <li><code class="language-plaintext highlighter-rouge">TMPDIR</code> (path): a place where you can temporarily store files</li>
+  <li><code class="language-plaintext highlighter-rouge">ZIPFILE</code> (path): your module’s installation zip</li>
+  <li><code class="language-plaintext highlighter-rouge">ARCH</code> (string): the CPU architecture of the device. Value is either <code class="language-plaintext highlighter-rouge">arm</code>, <code class="language-plaintext highlighter-rouge">arm64</code>, <code class="language-plaintext highlighter-rouge">x86</code>, or <code class="language-plaintext highlighter-rouge">x64</code></li>
+  <li><code class="language-plaintext highlighter-rouge">IS64BIT</code> (bool): <code class="language-plaintext highlighter-rouge">true</code> if <code class="language-plaintext highlighter-rouge">$ARCH</code> is either <code class="language-plaintext highlighter-rouge">arm64</code> or <code class="language-plaintext highlighter-rouge">x64</code></li>
+  <li><code class="language-plaintext highlighter-rouge">API</code> (int): the API level (Android version) of the device (e.g. <code class="language-plaintext highlighter-rouge">21</code> for Android 5.0)</li>
+</ul>
+
+<h5 id="functions">Functions<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#functions" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h5>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ui_print &lt;msg&gt;
+    print &lt;msg&gt; to console
+    Avoid using 'echo' as it will not display in custom recovery's console
+
+abort &lt;msg&gt;
+    print error message &lt;msg&gt; to console and terminate the installation
+    Avoid using 'exit' as it will skip the termination cleanup steps
+
+set_perm &lt;target&gt; &lt;owner&gt; &lt;group&gt; &lt;permission&gt; [context]
+    if [context] is not set, the default is "u:object_r:system_file:s0"
+    this function is a shorthand for the following commands:
+       chown owner.group target
+       chmod permission target
+       chcon context target
+
+set_perm_recursive &lt;directory&gt; &lt;owner&gt; &lt;group&gt; &lt;dirpermission&gt; &lt;filepermission&gt; [context]
+    if [context] is not set, the default is "u:object_r:system_file:s0"
+    for all files in &lt;directory&gt;, it will call:
+       set_perm file owner group filepermission context
+    for all directories in &lt;directory&gt; (including itself), it will call:
+       set_perm dir owner group dirpermission context
+</code></pre></div></div>
+
+<h5 id="easy-replace">Easy Replace<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#easy-replace" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h5>
+<p>You can declare a list of folders you want to directly replace in the variable name <code class="language-plaintext highlighter-rouge">REPLACE</code>. The module installer script will pickup this variable and create <code class="language-plaintext highlighter-rouge">.replace</code> files for you. An example declaration:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>REPLACE="
+/system/app/YouTube
+/system/app/Bloatware
+"
+</code></pre></div></div>
+<p>The list above will result in the following files being created: <code class="language-plaintext highlighter-rouge">$MODPATH/system/app/YouTube/.replace</code> and <code class="language-plaintext highlighter-rouge">$MODPATH/system/app/Bloatware/.replace</code></p>
+
+<h4 id="notes">Notes<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#notes" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+
+<ul>
+  <li>When your module is downloaded with the Magisk app, <code class="language-plaintext highlighter-rouge">update-binary</code> will be <strong>forcefully</strong> replaced with the latest <a href="https://github.com/topjohnwu/Magisk/blob/master/scripts/module_installer.sh"><code class="language-plaintext highlighter-rouge">module_installer.sh</code></a> to ensure all installer uses up-to-date scripts. <strong>DO NOT</strong> try to add any custom logic in <code class="language-plaintext highlighter-rouge">update-binary</code> as it is pointless.</li>
+  <li>Due to historical reasons, <strong>DO NOT</strong> add a file named <code class="language-plaintext highlighter-rouge">install.sh</code> in your module installer. That specific file was previously used and will be treated differently.</li>
+  <li><strong>DO NOT</strong> call <code class="language-plaintext highlighter-rouge">exit</code> at the end of <code class="language-plaintext highlighter-rouge">customize.sh</code>. The module installer would want to do finalizations.</li>
+</ul>
+
+<h2 id="submit-modules">Submit Modules<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#submit-modules" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>You can submit a module to <strong>Magisk-Module-Repo</strong> so users can download your module directly in the Magisk app.</p>
+
+<ul>
+  <li>Follow the instructions in the previous section to create a valid installer for your module.</li>
+  <li>Create <code class="language-plaintext highlighter-rouge">README.md</code> (filename should be exactly the same) containing all info for your module. If you are not familiar with the Markdown syntax, the <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown Cheat Sheet</a> will be handy.</li>
+  <li>Create a repository with your personal GitHub account, and upload your module installer to the repo</li>
+  <li>Create a request for submission via this link: <a href="https://github.com/Magisk-Modules-Repo/submission">submission</a></li>
+</ul>
+
+<h2 id="module-tricks">Module Tricks<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#module-tricks" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<h4 id="remove-files">Remove Files<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#remove-files" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<p>How to remove a file systemless-ly? To actually make the file <em>disappear</em> is complicated (possible, not worth the effort). Replacing it with a dummy file should be good enough! Create an empty file with the same name and place it in the same path within a module, it shall replace your target file with a dummy file.</p>
+
+<h4 id="remove-folders">Remove Folders<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#remove-folders" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<p>Same as mentioned above, actually making the folder <em>disappear</em> is not worth the effort. Replacing it with an empty folder should be good enough! A handy trick for module developers is to add the folder you want to remove into the <code class="language-plaintext highlighter-rouge">REPLACE</code> list within <code class="language-plaintext highlighter-rouge">customize.sh</code>. If your module doesn’t provide a corresponding folder, it will create an empty folder, and automatically add <code class="language-plaintext highlighter-rouge">.replace</code> into the empty folder so the dummy folder will properly replace the one in <code class="language-plaintext highlighter-rouge">/system</code>.</p>
+
+<h2 id="boot-scripts">Boot Scripts<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#boot-scripts" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>In Magisk, you can run boot scripts in 2 different modes: <strong>post-fs-data</strong> and <strong>late_start service</strong> mode.</p>
+
+<ul>
+  <li>post-fs-data mode
+    <ul>
+      <li>This stage is BLOCKING. The boot process is paused before execution is done, or 10 seconds have passed.</li>
+      <li>Scripts run before any modules are mounted. This allows a module developer to dynamically adjust their modules before it gets mounted.</li>
+      <li>This stage happens before Zygote is started, which pretty much means everything in Android</li>
+      <li><strong>Run scripts in this mode only if necessary!</strong></li>
+    </ul>
+  </li>
+  <li>late_start service mode
+    <ul>
+      <li>This stage is NON-BLOCKING. Your script runs in parallel along with the booting process.</li>
+      <li><strong>This is the recommended stage to run most scripts!</strong></li>
+    </ul>
+  </li>
+</ul>
+
+<p>In Magisk, there are also 2 kinds of scripts: <strong>general scripts</strong> and <strong>module scripts</strong>.</p>
+
+<ul>
+  <li>General Scripts
+    <ul>
+      <li>Placed in <code class="language-plaintext highlighter-rouge">/data/adb/post-fs-data.d</code> or <code class="language-plaintext highlighter-rouge">/data/adb/service.d</code></li>
+      <li>Only executed if the script is executable (execution permissions, <code class="language-plaintext highlighter-rouge">chmod +x script.sh</code>)</li>
+      <li>Scripts in <code class="language-plaintext highlighter-rouge">post-fs-data.d</code> runs in post-fs-data mode, and scripts in <code class="language-plaintext highlighter-rouge">service.d</code> runs in late_start service mode.</li>
+      <li>Modules should <strong>NOT</strong> add general scripts since it violates encapsulation</li>
+    </ul>
+  </li>
+  <li>Module Scripts
+    <ul>
+      <li>Placed in the folder of the module</li>
+      <li>Only executed if the module is enabled</li>
+      <li><code class="language-plaintext highlighter-rouge">post-fs-data.sh</code> runs in post-fs-data mode, and <code class="language-plaintext highlighter-rouge">service.sh</code> runs in late_start service mode.</li>
+      <li>Modules require boot scripts should <strong>ONLY</strong> use module scripts instead of general scripts</li>
+    </ul>
+  </li>
+</ul>
+
+<p>These scripts will run in Magisk’s BusyBox <code class="language-plaintext highlighter-rouge">ash</code> shell with “Standalone Mode” enabled.</p>
+
+<h2 id="root-directory-overlay-system">Root Directory Overlay System<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#root-directory-overlay-system" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+
+<p>Since <code class="language-plaintext highlighter-rouge">/</code> is read-only on system-as-root devices, Magisk provides an overlay system to enable developers to replace files in rootdir or add new <code class="language-plaintext highlighter-rouge">*.rc</code> scripts. This feature is designed mostly for custom kernel developers.</p>
+
+<p>Overlay files shall be placed in the <code class="language-plaintext highlighter-rouge">overlay.d</code> folder in boot image ramdisk, and they follow these rules:</p>
+
+<ol>
+  <li>All <code class="language-plaintext highlighter-rouge">*.rc</code> files in <code class="language-plaintext highlighter-rouge">overlay.d</code> will be read and concatenated <strong>AFTER</strong> <code class="language-plaintext highlighter-rouge">init.rc</code></li>
+  <li>Existing files can be replaced by files located at the same relative path</li>
+  <li>Files that correspond to a non-existing file will be ignored</li>
+</ol>
+
+<p>In order to have additional files that you want to reference in your custom <code class="language-plaintext highlighter-rouge">*.rc</code> scripts, add them in <code class="language-plaintext highlighter-rouge">overlay.d/sbin</code>. The 3 rules above does not apply to everything in this specific folder, as they will directly be copied to Magisk’s internal <code class="language-plaintext highlighter-rouge">tmpfs</code> directory (which used to always be located at <code class="language-plaintext highlighter-rouge">/sbin</code>).</p>
+
+<p>Due to changes in Android 11, the <code class="language-plaintext highlighter-rouge">/sbin</code> folder is no longer guaranteed to exist. In that case, Magisk randomly generates the <code class="language-plaintext highlighter-rouge">tmpfs</code> folder. Every occurrence of the pattern <code class="language-plaintext highlighter-rouge">${MAGISKTMP}</code> in your <code class="language-plaintext highlighter-rouge">*.rc</code> scripts will be replaced with the Magisk <code class="language-plaintext highlighter-rouge">tmpfs</code> folder when <code class="language-plaintext highlighter-rouge">magiskinit</code> injects it into <code class="language-plaintext highlighter-rouge">init.rc</code>. This also works on pre Android 11 devices as <code class="language-plaintext highlighter-rouge">${MAGISKTMP}</code> will simply be replaced with <code class="language-plaintext highlighter-rouge">/sbin</code> in this case, so the best practice is to <strong>NEVER</strong> hardcode <code class="language-plaintext highlighter-rouge">/sbin</code> in your <code class="language-plaintext highlighter-rouge">*.rc</code> scripts when referencing additional files.</p>
+
+<p>Here is an example of how to setup <code class="language-plaintext highlighter-rouge">overlay.d</code> with custom <code class="language-plaintext highlighter-rouge">*.rc</code> script:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ramdisk
+│
+├── overlay.d
+│&nbsp;&nbsp; ├── sbin
+│   │   ├── libfoo.ko      &lt;--- These 2 files will be copied
+│&nbsp;&nbsp; │&nbsp;&nbsp; └── myscript.sh    &lt;--- to Magisk's tmpfs directory
+│&nbsp;&nbsp; ├── custom.rc&nbsp;&nbsp;        &lt;--- This file will be injected into init.rc
+│&nbsp;&nbsp; ├── res
+│&nbsp;&nbsp; │&nbsp;&nbsp; └── random.png     &lt;--- This file will replace /res/random.png
+│&nbsp;&nbsp; └── new_file           &lt;--- This file will be ignored because
+│                               /new_file does not exist
+├── res
+│&nbsp;&nbsp; └── random.png         &lt;--- This file will be replaced by
+│                               /overlay.d/res/random.png
+├── ...
+├── ...  /* The rest of initramfs files */
+│
+</code></pre></div></div>
+
+<p>Here is an example of the <code class="language-plaintext highlighter-rouge">custom.rc</code>:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Use ${MAGISKTMP} to refer to Magisk's tmpfs directory
+
+on early-init
+    setprop sys.example.foo bar
+    insmod ${MAGISKTMP}/libfoo.ko
+    start myservice
+
+service myservice ${MAGISKTMP}/myscript.sh
+    oneshot
+</code></pre></div></div>
+
+
+      
+      <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+        这个网页是开源的。 <a href="https://github.com/E7KMbb/E7KMbb.github.io/edit/main/Magisk/guides.html">改善此页面</a>。
+      </div>
+      
+    </div>
+    
+    <div id="goog-gt-tt" class="skiptranslate" dir="ltr"><div style="padding: 8px;"><div><div class="logo"><img src="https://www.gstatic.com/images/branding/product/1x/translate_24dp.png" width="20" height="20" alt="Google 翻译"></div></div></div><div class="top" style="padding: 8px; float: left; width: 100%;"><h1 class="title gray">原文</h1></div><div class="middle" style="padding: 8px;"><div class="original-text"></div></div><div class="bottom" style="padding: 8px;"><div class="activity-links"><span class="activity-link">提供更好的翻译建议</span><span class="activity-link"></span></div><div class="started-activity-container"><hr style="color: #CCC; background-color: #CCC; height: 1px; border: none;"><div class="activity-root"></div></div></div><div class="status-message" style="display: none;"></div></div>
+    
+  
+
+<div class="goog-te-spinner-pos"><div class="goog-te-spinner-animation"><svg xmlns="http://www.w3.org/2000/svg" class="goog-te-spinner" width="96px" height="96px" viewBox="0 0 66 66"><circle class="goog-te-spinner-path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle></svg></div></div></body></html>
