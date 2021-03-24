@@ -1,0 +1,319 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Magisk Tools | Magisk</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Magisk Tools" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="The Magic Mask for Android" />
+<meta property="og:description" content="The Magic Mask for Android" />
+<link rel="canonical" href="https://topjohnwu.github.io/Magisk/tools.html" />
+<meta property="og:url" content="https://topjohnwu.github.io/Magisk/tools.html" />
+<meta property="og:site_name" content="Magisk" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Magisk Tools" />
+<script type="application/ld+json">
+{"@type":"WebPage","headline":"Magisk Tools","url":"https://topjohnwu.github.io/Magisk/tools.html","description":"The Magic Mask for Android","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/Magisk/assets/css/style.css?v=0298ab99c4f5e9982c72ed2fa833115c69e2dd3d">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://topjohnwu.github.io/Magisk/">Magisk</a></h1>
+      
+
+      <h1 id="magisk-tools">Magisk Tools</h1>
+<p>Magisk comes with a huge collections of tools for installation, daemons, and utilities for developers. This documentation covers the 3 binaries and all included applets. The binaries and applets are shown below:</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>magiskboot                 /* binary */
+magiskinit                 /* binary */
+magiskpolicy -&gt; magiskinit
+supolicy -&gt; magiskinit
+magisk                     /* binary */
+magiskhide -&gt; magisk
+resetprop -&gt; magisk
+su -&gt; magisk
+</code></pre></div></div>
+
+<p>Note: The Magisk zip you download only contains <code class="language-plaintext highlighter-rouge">magiskboot</code>, <code class="language-plaintext highlighter-rouge">magiskinit</code>, and <code class="language-plaintext highlighter-rouge">magiskinit64</code>. The binary <code class="language-plaintext highlighter-rouge">magisk</code> is compressed and embedded into <code class="language-plaintext highlighter-rouge">magiskinit(64)</code>. Push <code class="language-plaintext highlighter-rouge">magiskinit(64)</code> to your device and run <code class="language-plaintext highlighter-rouge">./magiskinit(64) -x magisk &lt;path&gt;</code> to extract <code class="language-plaintext highlighter-rouge">magisk</code> out of the binary.</p>
+
+<h3 id="magiskboot">magiskboot</h3>
+<p>A tool to unpack / repack boot images, parse / patch / extract cpio, patch dtb, hex patch binaries, and compress / decompress files with multiple algorithms.</p>
+
+<p><code class="language-plaintext highlighter-rouge">magiskboot</code> natively supports (which means it does not rely on external tools) common compression formats including <code class="language-plaintext highlighter-rouge">gzip</code>, <code class="language-plaintext highlighter-rouge">lz4</code>, <code class="language-plaintext highlighter-rouge">lz4_legacy</code> (<a href="https://events.static.linuxfound.org/sites/events/files/lcjpcojp13_klee.pdf">only used on LG</a>), <code class="language-plaintext highlighter-rouge">lzma</code>, <code class="language-plaintext highlighter-rouge">xz</code>, and <code class="language-plaintext highlighter-rouge">bzip2</code>.</p>
+
+<p>The concept of <code class="language-plaintext highlighter-rouge">magiskboot</code> is to make boot image modification simpler. For unpacking, it parses the header and extracts all sections in the image, decompressing on-the-fly if compression is detected in any sections. For repacking, the original boot image is required so the original headers can be used, changing only the necessary entries such as section sizes and checksum. All sections will be compressed back to the original format if required. The tool also supports many CPIO and DTB operations.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: magiskboot &lt;action&gt; [args...]
+
+Supported actions:
+  unpack [-n] [-h] &lt;bootimg&gt;
+    Unpack &lt;bootimg&gt; to, if available, kernel, kernel_dtb, ramdisk.cpio,
+    second, dtb, extra, and recovery_dtbo into current directory.
+    If '-n' is provided, it will not attempt to decompress kernel or
+    ramdisk.cpio from their original formats.
+    If '-h' is provided, it will dump header info to 'header',
+    which will be parsed when repacking.
+    Return values:
+    0:valid    1:error    2:chromeos
+
+  repack [-n] &lt;origbootimg&gt; [outbootimg]
+    Repack boot image components from current directory
+    to [outbootimg], or new-boot.img if not specified.
+    If '-n' is provided, it will not attempt to recompress ramdisk.cpio,
+    otherwise it will compress ramdisk.cpio and kernel with the same method
+    in &lt;origbootimg&gt; if the file provided is not already compressed.
+
+  hexpatch &lt;file&gt; &lt;hexpattern1&gt; &lt;hexpattern2&gt;
+    Search &lt;hexpattern1&gt; in &lt;file&gt;, and replace with &lt;hexpattern2&gt;
+
+  cpio &lt;incpio&gt; [commands...]
+    Do cpio commands to &lt;incpio&gt; (modifications are done in-place)
+    Each command is a single argument, add quotes for each command
+    Supported commands:
+      exists ENTRY
+        Return 0 if ENTRY exists, else return 1
+      rm [-r] ENTRY
+        Remove ENTRY, specify [-r] to remove recursively
+      mkdir MODE ENTRY
+        Create directory ENTRY in permissions MODE
+      ln TARGET ENTRY
+        Create a symlink to TARGET with the name ENTRY
+      mv SOURCE DEST
+        Move SOURCE to DEST
+      add MODE ENTRY INFILE
+        Add INFILE as ENTRY in permissions MODE; replaces ENTRY if exists
+      extract [ENTRY OUT]
+        Extract ENTRY to OUT, or extract all entries to current directory
+      test
+        Test the current cpio's patch status
+        Return values:
+        0:stock    1:Magisk    2:unsupported (phh, SuperSU, Xposed)
+      patch
+        Apply ramdisk patches
+        Configure with env variables: KEEPVERITY KEEPFORCEENCRYPT
+      backup ORIG
+        Create ramdisk backups from ORIG
+      restore
+        Restore ramdisk from ramdisk backup stored within incpio
+      sha1
+        Print stock boot SHA1 if previously backed up in ramdisk
+
+  dtb &lt;input&gt; &lt;action&gt; [args...]
+    Do dtb related actions to &lt;input&gt;
+    Supported actions:
+      print [-f]
+        Print all contents of dtb for debugging
+        Specify [-f] to only print fstab nodes
+      patch
+        Search for fstab and remove verity/avb
+        Modifications are done directly to the file in-place
+        Configure with env variables: KEEPVERITY
+
+  split &lt;input&gt;
+    Split image.*-dtb into kernel + kernel_dtb
+
+  sha1 &lt;file&gt;
+    Print the SHA1 checksum for &lt;file&gt;
+
+  cleanup
+    Cleanup the current working directory
+
+  compress[=method] &lt;infile&gt; [outfile]
+    Compress &lt;infile&gt; with [method] (default: gzip), optionally to [outfile]
+    &lt;infile&gt;/[outfile] can be '-' to be STDIN/STDOUT
+    Supported methods: bzip2 gzip lz4 lz4_legacy lz4_lg lzma xz
+
+  decompress &lt;infile&gt; [outfile]
+    Detect method and decompress &lt;infile&gt;, optionally to [outfile]
+    &lt;infile&gt;/[outfile] can be '-' to be STDIN/STDOUT
+    Supported methods: bzip2 gzip lz4 lz4_legacy lz4_lg lzma xz
+</code></pre></div></div>
+
+<h3 id="magiskinit">magiskinit</h3>
+<p>This binary will replace <code class="language-plaintext highlighter-rouge">init</code> in the ramdisk of a Magisk patched boot image. It is originally created for supporting devices using system-as-root, but the tool is extended to support all devices and became a crucial part of Magisk. More details can be found in the <strong>Pre-Init</strong> section in <a href="/Magisk/details.html#magisk-booting-process">Magisk Booting Process</a>.</p>
+
+<h3 id="magiskpolicy">magiskpolicy</h3>
+<p>(This tool is aliased to <code class="language-plaintext highlighter-rouge">supolicy</code> for compatibility with SuperSU’s sepolicy tool)</p>
+
+<p>An applet of <code class="language-plaintext highlighter-rouge">magiskinit</code>. This tool could be used for advanced developers to modify SELinux policies. In common scenarios like Linux server admins, they would directly modify the SELinux policy sources (<code class="language-plaintext highlighter-rouge">*.te</code>) and recompile the <code class="language-plaintext highlighter-rouge">sepolicy</code> binary, but here on Android we directly patch the binary file (or runtime policies).</p>
+
+<p>All processes spawned from the Magisk daemon, including root shells and all its forks, are running in the context <code class="language-plaintext highlighter-rouge">u:r:magisk:s0</code>. The rule used on all Magisk installed systems can be viewed as stock <code class="language-plaintext highlighter-rouge">sepolicy</code> with these patches: <code class="language-plaintext highlighter-rouge">magiskpolicy --magisk 'allow magisk * * *'</code>.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: magiskpolicy [--options...] [policy statements...]
+
+Options:
+   --help            show help message for policy statements
+   --load FILE       load policies from FILE
+   --load-split      load from precompiled sepolicy or compile
+                     split policies
+   --compile-split   compile split cil policies
+   --save FILE       save policies to FILE
+   --live            directly apply sepolicy live
+   --magisk          inject built-in rules for a minimal
+                     Magisk selinux environment
+   --apply FILE      apply rules from FILE, read and parsed
+                     line by line as policy statements
+
+If neither --load or --compile-split is specified, it will load
+from current live policies (/sys/fs/selinux/policy)
+
+One policy statement should be treated as one parameter;
+this means each policy statement should be enclosed in quotes.
+Multiple policy statements can be provided in a single command.
+
+Statements has a format of "&lt;rule_name&gt; [args...]".
+Arguments labeled with (^) can accept one or more entries. Multiple
+entries consist of a space separated list enclosed in braces ({}).
+Arguments labeled with (*) are the same as (^), but additionally
+support the match-all operator (*).
+
+Example: "allow { s1 s2 } { t1 t2 } class *"
+Will be expanded to:
+
+allow s1 t1 class { all-permissions-of-class }
+allow s1 t2 class { all-permissions-of-class }
+allow s2 t1 class { all-permissions-of-class }
+allow s2 t2 class { all-permissions-of-class }
+
+Supported policy statements:
+
+"allow *source_type *target_type *class *perm_set"
+"deny *source_type *target_type *class *perm_set"
+"auditallow *source_type *target_type *class *perm_set"
+"dontaudit *source_type *target_type *class *perm_set"
+
+"allowxperm *source_type *target_type *class operation xperm_set"
+"auditallowxperm *source_type *target_type *class operation xperm_set"
+"dontauditxperm *source_type *target_type *class operation xperm_set"
+- The only supported operation is 'ioctl'
+- xperm_set format is either 'low-high', 'value', or '*'.
+  '*' will be treated as '0x0000-0xFFFF'.
+  All values should be written in hexadecimal.
+
+"permissive ^type"
+"enforce ^type"
+
+"typeattribute ^type ^attribute"
+
+"type type_name ^(attribute)"
+- Argument 'attribute' is optional, default to 'domain'
+
+"attribute attribute_name"
+
+"type_transition source_type target_type class default_type (object_name)"
+- Argument 'object_name' is optional
+
+"type_change source_type target_type class default_type"
+"type_member source_type target_type class default_type"
+
+"genfscon fs_name partial_path fs_context"
+</code></pre></div></div>
+
+<h3 id="magisk">magisk</h3>
+<p>When the magisk binary is called with the name <code class="language-plaintext highlighter-rouge">magisk</code>, it works as a utility tool with many helper functions and the entry points for several Magisk services.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: magisk [applet [arguments]...]
+   or: magisk [options]...
+
+Options:
+   -c                        print current binary version
+   -v                        print running daemon version
+   -V                        print running daemon version code
+   --list                    list all available applets
+   --remove-modules          remove all modules and reboot
+   --install-module ZIP      install a module zip file
+
+Advanced Options (Internal APIs):
+   --daemon                  manually start magisk daemon
+   --[init trigger]          start service for init trigger
+                             Supported init triggers:
+                             post-fs-data, service, boot-complete
+   --unlock-blocks           set BLKROSET flag to OFF for all block devices
+   --restorecon              restore selinux context on Magisk files
+   --clone-attr SRC DEST     clone permission, owner, and selinux context
+   --clone SRC DEST          clone SRC to DEST
+   --sqlite SQL              exec SQL commands to Magisk database
+   --path                    print Magisk tmpfs mount path
+
+Available applets:
+    su, resetprop, magiskhide
+</code></pre></div></div>
+
+<h3 id="su">su</h3>
+<p>An applet of <code class="language-plaintext highlighter-rouge">magisk</code>, the MagiskSU entry point. Good old <code class="language-plaintext highlighter-rouge">su</code> command.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: su [options] [-] [user [argument...]]
+
+Options:
+  -c, --command COMMAND         pass COMMAND to the invoked shell
+  -h, --help                    display this help message and exit
+  -, -l, --login                pretend the shell to be a login shell
+  -m, -p,
+  --preserve-environment        preserve the entire environment
+  -s, --shell SHELL             use SHELL instead of the default /system/bin/sh
+  -v, --version                 display version number and exit
+  -V                            display version code and exit
+  -mm, -M,
+  --mount-master                force run in the global mount namespace
+</code></pre></div></div>
+
+<p>Note: even though the <code class="language-plaintext highlighter-rouge">-Z, --context</code> option is not listed above, the option still exists for CLI compatibility with apps designed for SuperSU. However the option is silently ignored since it’s no longer relevant.</p>
+
+<h3 id="resetprop">resetprop</h3>
+<p>An applet of <code class="language-plaintext highlighter-rouge">magisk</code>. An advanced system property manipulation utility. Check the <a href="/Magisk/details.html#resetprop">Resetprop Details</a> for more background information.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: resetprop [flags] [options...]
+
+Options:
+   -h, --help        show this message
+   (no arguments)    print all properties
+   NAME              get property
+   NAME VALUE        set property entry NAME with VALUE
+   --file FILE       load props from FILE
+   --delete NAME     delete property
+
+Flags:
+   -v      print verbose output to stderr
+   -n      set props without going through property_service
+           (this flag only affects setprop)
+   -p      read/write props from/to persistent storage
+           (this flag only affects getprop and delprop)
+</code></pre></div></div>
+
+<h3 id="magiskhide">magiskhide</h3>
+<p>An applet of <code class="language-plaintext highlighter-rouge">magisk</code>, the CLI to control MagiskHide. Use this tool to communicate with the daemon to change MagiskHide settings.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: magiskhide [action [arguments...] ]
+
+Actions:
+   status          Return the status of magiskhide
+   enable          Start magiskhide
+   disable         Stop magiskhide
+   add PKG [PROC]  Add a new target to the hide list
+   rm PKG [PROC]   Remove target(s) from the hide list
+   ls              Print the current hide list
+   exec CMDs...    Execute commands in isolated mount
+                   namespace and do all hide unmounts
+</code></pre></div></div>
+
+
+      
+      <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+        This site is open source. <a href="https://github.com/topjohnwu/Magisk/edit/master/docs/tools.md">Improve this page</a>.
+      </div>
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+    
+  </body>
+</html>

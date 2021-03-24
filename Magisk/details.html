@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+<!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Internal Details | Magisk</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Internal Details" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="The Magic Mask for Android" />
+<meta property="og:description" content="The Magic Mask for Android" />
+<link rel="canonical" href="https://topjohnwu.github.io/Magisk/details.html" />
+<meta property="og:url" content="https://topjohnwu.github.io/Magisk/details.html" />
+<meta property="og:site_name" content="Magisk" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Internal Details" />
+<script type="application/ld+json">
+{"@type":"WebPage","headline":"Internal Details","url":"https://topjohnwu.github.io/Magisk/details.html","description":"The Magic Mask for Android","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <link rel="stylesheet" href="/Magisk/assets/css/style.css?v=0298ab99c4f5e9982c72ed2fa833115c69e2dd3d">
+  </head>
+  <body>
+    <div class="container-lg px-3 my-5 markdown-body">
+      
+      <h1><a href="https://topjohnwu.github.io/Magisk/">Magisk</a></h1>
+      
+
+      <h1 id="internal-details">Internal Details</h1>
+
+<h2 id="file-structure">File Structure</h2>
+
+<h3 id="paths-in-magisk-tmpfs-directory">Paths in “Magisk tmpfs directory”</h3>
+
+<p>Magisk will mount a <code class="language-plaintext highlighter-rouge">tmpfs</code> directory to store some temporary data. For devices with the <code class="language-plaintext highlighter-rouge">/sbin</code> folder, it will be chosen as it will also act as an overlay to inject binaries into <code class="language-plaintext highlighter-rouge">PATH</code>. From Android 11 onwards, the <code class="language-plaintext highlighter-rouge">/sbin</code> folder might not exist, so Magisk will randomly create a folder under <code class="language-plaintext highlighter-rouge">/dev</code> and use it as the base folder.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># In order to get the current base folder Magisk is using,
+# use the command `magisk --path`.
+# Binaries like magisk, magiskinit, and all symlinks to
+# applets are directly stored in this path. This means when
+# this is /sbin, these binaries will be directly in PATH.
+MAGISKPATH=$(magisk --path)
+
+# Magisk internal stuffs
+MAGISKTMP=$MAGISKBASE/.magisk
+
+# Magisk's BusyBox directory. Within this folder stores
+# the busybox binary and symlinks to all of its applets.
+# Any usage of this directory is deprecated, please
+# directly call /data/adb/magisk/busybox and use
+# BusyBox's ASH Standalone mode.
+# The creation of this path will be removed in the future.
+$MAGISKTMP/busybox
+
+# /data/adb/modules will be bind mounted here.
+# The original folder is not used due to nosuid mount flag.
+$MAGISKTMP/modules
+
+# The current Magisk installation config
+$MAGISKTMP/config
+
+# Partition mirrors
+# Each directory in this path will be mounted with the
+# partition of its directory name.
+# e.g. system, system_ext, vendor, data ...
+$MAGISKTMP/mirror
+
+# Block devices Magisk creates internally to mount mirrors.
+$MAGISKTMP/block
+
+# Root directory patch files
+# On system-as-root devices, / is not writable.
+# All pre-init patched files are stored here and bind mounted.
+$MAGISKTMP/rootdir
+</code></pre></div></div>
+
+<h3 id="paths-in-data">Paths in <code class="language-plaintext highlighter-rouge">/data</code></h3>
+
+<p>Some binaries and files should be stored on non-volatile storages in <code class="language-plaintext highlighter-rouge">/data</code>. In order to prevent detection, everything has to be stored somewhere safe and undetectable in <code class="language-plaintext highlighter-rouge">/data</code>. The folder <code class="language-plaintext highlighter-rouge">/data/adb</code> was chosen because of the following advantages:</p>
+
+<ul>
+  <li>It is an existing folder on modern Android, so it cannot be used as an indication of the existence of Magisk.</li>
+  <li>The permission of the folder is by default <code class="language-plaintext highlighter-rouge">700</code>, owner as <code class="language-plaintext highlighter-rouge">root</code>, so non-root processes are unable to enter, read, write the folder in any possible way.</li>
+  <li>The folder is labeled with secontext <code class="language-plaintext highlighter-rouge">u:object_r:adb_data_file:s0</code>, and very few processes have the permission to do any interaction with that secontext.</li>
+  <li>The folder is located in <em>Device encrypted storage</em>, so it is accessible as soon as data is properly mounted in FBE (File-Based Encryption) devices.</li>
+</ul>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SECURE_DIR=/data/adb
+
+# Folder storing general post-fs-data scripts
+$SECURE_DIR/post-fs-data.d
+
+# Folder storing general late_start service scripts
+$SECURE_DIR/service.d
+
+# Magisk modules
+$SECURE_DIR/modules
+
+# Magisk modules that are pending for upgrade
+# Module files are not safe to be modified when mounted
+# Modules installed through the Magisk app will be stored here
+# and will be merged into $SECURE_DIR/modules in the next reboot
+$SECURE_DIR/modules_update
+
+# Database storing settings and root permissions
+MAGISKDB=$SECURE_DIR/magisk.db
+
+# All magisk related binaries, including busybox,
+# scripts, and magisk binaries. Used in supporting
+# module installation, addon.d, the Magisk app etc.
+DATABIN=$SECURE_DIR/magisk
+
+</code></pre></div></div>
+
+<h2 id="magisk-booting-process">Magisk Booting Process</h2>
+
+<h3 id="pre-init">Pre-Init</h3>
+
+<p><code class="language-plaintext highlighter-rouge">magiskinit</code> will replace <code class="language-plaintext highlighter-rouge">init</code> as the first program to run.</p>
+
+<ul>
+  <li>Early mount required partitions. On legacy system-as-root devices, we switch root to system; on 2SI devices, we patch fstab and execute the original <code class="language-plaintext highlighter-rouge">init</code> to mount partitions for us.</li>
+  <li>Load sepolicy either from <code class="language-plaintext highlighter-rouge">/sepolicy</code>, precompiled sepolicy in vendor, or compile split sepolicy</li>
+  <li>Patch sepolicy rules and dump to <code class="language-plaintext highlighter-rouge">/sepolicy</code> or <code class="language-plaintext highlighter-rouge">/sbin/.se</code> or <code class="language-plaintext highlighter-rouge">/dev/.se</code></li>
+  <li>Patch <code class="language-plaintext highlighter-rouge">init</code> or <code class="language-plaintext highlighter-rouge">libselinux.so</code> to force the system to load the patched policies</li>
+  <li>Inject magisk services into <code class="language-plaintext highlighter-rouge">init.rc</code></li>
+  <li>Execute the original <code class="language-plaintext highlighter-rouge">init</code> to continue the boot process</li>
+</ul>
+
+<h3 id="post-fs-data">post-fs-data</h3>
+
+<p>This triggers on <code class="language-plaintext highlighter-rouge">post-fs-data</code> when <code class="language-plaintext highlighter-rouge">/data</code> is decrypted and mounted. The daemon <code class="language-plaintext highlighter-rouge">magiskd</code> will be launched, post-fs-data scripts are executed, and module files are magic mounted.</p>
+
+<h3 id="late_start">late_start</h3>
+
+<p>Later in the booting process, the class <code class="language-plaintext highlighter-rouge">late_start</code> will be triggered, and Magisk “service” mode will be started. In this mode, service scripts are executed.</p>
+
+<h2 id="resetprop">Resetprop</h2>
+
+<p>Usually, system properties are designed to only be updated by <code class="language-plaintext highlighter-rouge">init</code> and read-only to non-root processes. With root you can change properties by sending requests to <code class="language-plaintext highlighter-rouge">property_service</code> (hosted by <code class="language-plaintext highlighter-rouge">init</code>) using commands such as <code class="language-plaintext highlighter-rouge">setprop</code>, but changing read-only props (props that start with <code class="language-plaintext highlighter-rouge">ro.</code> like <code class="language-plaintext highlighter-rouge">ro.build.product</code>) and deleting properties are still prohibited.</p>
+
+<p><code class="language-plaintext highlighter-rouge">resetprop</code> is implemented by distilling out the source code related to system properties from AOSP and patched to allow direct modification to property area, or <code class="language-plaintext highlighter-rouge">prop_area</code>, bypassing the need to go through <code class="language-plaintext highlighter-rouge">property_service</code>. Since we are bypassing <code class="language-plaintext highlighter-rouge">property_service</code>, there are a few caveats:</p>
+
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">on property:foo=bar</code> actions registered in <code class="language-plaintext highlighter-rouge">*.rc</code> scripts will not be triggered if property changes does not go through <code class="language-plaintext highlighter-rouge">property_service</code>. The default set property behavior of <code class="language-plaintext highlighter-rouge">resetprop</code> matches <code class="language-plaintext highlighter-rouge">setprop</code>, which <strong>WILL</strong> trigger events (implemented by first deleting the property then set it via <code class="language-plaintext highlighter-rouge">property_service</code>). There is a flag <code class="language-plaintext highlighter-rouge">-n</code> to disable it if you need this special behavior.</li>
+  <li>persist properties (props that starts with <code class="language-plaintext highlighter-rouge">persist.</code>, like <code class="language-plaintext highlighter-rouge">persist.sys.usb.config</code>) are stored in both <code class="language-plaintext highlighter-rouge">prop_area</code> and <code class="language-plaintext highlighter-rouge">/data/property</code>. By default, deleting props will <strong>NOT</strong> remove it from persistent storage, meaning the property will be restored after the next reboot; reading props will <strong>NOT</strong> read from persistent storage, as this is the behavior of <code class="language-plaintext highlighter-rouge">getprop</code>. With the flag <code class="language-plaintext highlighter-rouge">-p</code>, deleting props will remove the prop in <strong>BOTH</strong> <code class="language-plaintext highlighter-rouge">prop_area</code> and <code class="language-plaintext highlighter-rouge">/data/property</code>, and reading props will be read from <strong>BOTH</strong> <code class="language-plaintext highlighter-rouge">prop_area</code> and persistent storage.</li>
+</ul>
+
+<h2 id="magic-mount">Magic Mount</h2>
+
+<p>The details of the actual implementation and algorithm of Magic Mount is omitted here, please directly dive into the source code if interested (<code class="language-plaintext highlighter-rouge">core/module.cpp</code>).</p>
+
+<p>Even though the mounting logic is very complicated, the final result of Magic Mount is actually pretty simple. For each module, the folder <code class="language-plaintext highlighter-rouge">$MODPATH/system</code> will be recursively merged into the real <code class="language-plaintext highlighter-rouge">/system</code>; that is: existing files in the real system will be replaced by the one in modules’ system, and new files in modules’ system will be added to the real system.</p>
+
+<p>There is one additional trick you can use: if you place an empty file named <code class="language-plaintext highlighter-rouge">.replace</code> in any of the folders in a module’s system, instead of merging the contents, that folder will directly replace the one in the real system. This will be very handy in some cases, for example swapping out a system app.</p>
+
+<p>If you want to replace files in <code class="language-plaintext highlighter-rouge">/vendor</code> or <code class="language-plaintext highlighter-rouge">/product</code>, please place them under <code class="language-plaintext highlighter-rouge">$MODPATH/system/vendor</code> or <code class="language-plaintext highlighter-rouge">$MODPATH/system/product</code>. Magisk will transparently handle both cases, whether vendor or product is a separate partition or not.</p>
+
+<h2 id="selinux-policies">SELinux Policies</h2>
+
+<p>Magisk will patch the stock <code class="language-plaintext highlighter-rouge">sepolicy</code> to make sure root and Magisk operations can be done in a safe and secure way. The new domain <code class="language-plaintext highlighter-rouge">magisk</code> is effectively permissive, which is what <code class="language-plaintext highlighter-rouge">magiskd</code> and all root shell will run in. <code class="language-plaintext highlighter-rouge">magisk_file</code> is a new file type that is setup to be allowed to be accessed by every domain (unrestricted file context).</p>
+
+<p>Before Android 8.0, all allowed su client domains are allowed to directly connect to <code class="language-plaintext highlighter-rouge">magiskd</code> and establish connection with the daemon to get a remote root shell. Magisk also have to relax some <code class="language-plaintext highlighter-rouge">ioctl</code> operations so root shells can function properly.</p>
+
+<p>After Android 8.0, to reduce relaxation of rules in Android’s sandbox, a new SELinux model is deployed. The <code class="language-plaintext highlighter-rouge">magisk</code> binary is labelled with <code class="language-plaintext highlighter-rouge">magisk_exec</code> file type, and processes running as allowed su client domains executing the <code class="language-plaintext highlighter-rouge">magisk</code> binary (this includes the <code class="language-plaintext highlighter-rouge">su</code> command) will transit to <code class="language-plaintext highlighter-rouge">magisk_client</code> by using a <code class="language-plaintext highlighter-rouge">type_transition</code> rule. Rules strictly restrict that only <code class="language-plaintext highlighter-rouge">magisk</code> domain processes are allowed to attribute files to <code class="language-plaintext highlighter-rouge">magisk_exec</code>. Direct connection to sockets of <code class="language-plaintext highlighter-rouge">magiskd</code> are not allowed; the only way to access the daemon is through a <code class="language-plaintext highlighter-rouge">magisk_client</code> process. These changes allow us to keep the sandbox intact, and keep Magisk specific rules separated from the rest of the policies.</p>
+
+<p>The full set of rules can be found in <code class="language-plaintext highlighter-rouge">magiskpolicy/rules.cpp</code>.</p>
+
+
+      
+      <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
+        This site is open source. <a href="https://github.com/topjohnwu/Magisk/edit/master/docs/details.md">Improve this page</a>.
+      </div>
+      
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.1.0/anchor.min.js" integrity="sha256-lZaRhKri35AyJSypXXs4o6OPFTbTmUoltBbDCbdzegg=" crossorigin="anonymous"></script>
+    <script>anchors.add();</script>
+    
+  </body>
+</html>
