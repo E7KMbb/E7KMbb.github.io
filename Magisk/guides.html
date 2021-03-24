@@ -27,6 +27,10 @@
       
 
       <h1 id="developer-guides">开发者指南</h1>
+      
+      <p>此指南由coolapk<a href="http://www.coolapk.com/u/999689">@依然的爱</a>翻译</p>
+      
+      <p>翻译不易，如果这篇指南帮到了你，你可以给我<a href="https://docs.qq.com/doc/DWVJKWVVDWURQZUZK?disableReturnList=1&_from=1">捐赠</a>(当然,不捐赠也没关系)</p>
 
 <h2 id="busybox">BusyBox<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#busybox" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 <p>Magisk附带了功能完整的BusyBox二进制文件(包括对SELinux的完整支持)。执行文件位于<code class="language-plaintext highlighter-rouge">/data/adb/magisk/busybox</code>。Magisk的BusyBox支持运行时可切换的“ASH Standalone Shell Mode(ASH独立Shell模式)”。这种独立模式的意思是，在<code class="language-plaintext highlighter-rouge">ash</code>shell的中的BusyBox运行时，无论设置为什么<code class="language-plaintext highlighter-rouge">PATH</code>，每个命令都将直接使用BusyBox中的应用(子命令)。例如，就像<code class="language-plaintext highlighter-rouge">ls</code>，<code class="language-plaintext highlighter-rouge">rm</code>，<code class="language-plaintext highlighter-rouge">chmod</code> 命令一样。它们将<strong>不在</strong>使用<code class="language-plaintext highlighter-rouge">PATH</code>(在Android中，默认为<code class="language-plaintext highlighter-rouge">/system/bin/ls</code>，<code class="language-plaintext highlighter-rouge">/system/bin/rm</code>，和<code class="language-plaintext highlighter-rouge">/system/bin/chmod</code>。)，而是直接调用Magisk内部的BusyBox应用(子命令)。这样可以确保脚本始终在可预测的环境中运行，并且无论运行在哪个Android版本上，始终具有完整的命令集。要强制命令<em>不使用</em>BusyBox，必须使用完整路径调用可执行文件。</p>
