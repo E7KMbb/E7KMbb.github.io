@@ -1,20 +1,20 @@
-<!DOCTYPE html><html lang="en" class=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="stylesheet" type="text/css" href="cid:css-007f2e1b-8792-40a9-a043-1f713b16b012@mhtml.blink" />
+<!DOCTYPE html><html lang="zh" class=""><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><link rel="stylesheet" type="text/css" href="cid:css-007f2e1b-8792-40a9-a043-1f713b16b012@mhtml.blink" />
     
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>Developer Guides | Magisk</title>
+<title>开发者指南 | Magisk</title>
 <meta name="generator" content="Jekyll v3.9.0">
 <meta property="og:title" content="Developer Guides">
-<meta property="og:locale" content="en_US">
+<meta property="og:locale" content="zh_CN">
 <meta name="description" content="The Magic Mask for Android">
 <meta property="og:description" content="The Magic Mask for Android">
 <link rel="canonical" href="https://topjohnwu.github.io/Magisk/guides.html">
 <meta property="og:url" content="https://topjohnwu.github.io/Magisk/guides.html">
 <meta property="og:site_name" content="Magisk">
 <meta name="twitter:card" content="summary">
-<meta property="twitter:title" content="Developer Guides">
+<meta property="twitter:title" content="开发者指南">
 
 <!-- End Jekyll SEO tag -->
 
@@ -157,52 +157,55 @@ description=&lt;string&gt;
 │
 </code></pre></div></div>
 
-<h4 id="customization">customize.sh<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#customization" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<h4 id="customization">自定义<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#customization" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
 
-<p>如果您需要自定义模块安装过程，则可以选择在安装程序中创建一个名为<code class="language-plaintext highlighter-rouge">customize.sh</code>的脚本。This script will be <em>sourced</em> (not executed!) by <code class="language-plaintext highlighter-rouge">update-binary</code> after all files are extracted and default permissions and secontext are applied. This is very useful if your module includes different files based on ABI, or you need to set special permissions/secontext for some of your files (e.g. files in <code class="language-plaintext highlighter-rouge">/system/bin</code>).</p>
+<p>如果您需要自定义模块安装过程，则可以选择在安装程序中创建一个名为<code class="language-plaintext highlighter-rouge">customize.sh</code>的脚本。这个脚本会在所有文件以默认permissions和secontext应用后，由update-binary<em>调用</em>(不是执行！)。如果您的模块包含基于ABI的其他文件，或者您需要为某些文件(例如<code class="language-plaintext highlighter-rouge">/system/bin</code>中的文件)，设置特殊的permissions/secontext，这将非常有用。</p>
 
-<p>If you need even more customization and prefer to do everything on your own, declare <code class="language-plaintext highlighter-rouge">SKIPUNZIP=1</code> in <code class="language-plaintext highlighter-rouge">customize.sh</code> to skip the extraction and applying default permissions/secontext steps. Be aware that by doing so, your <code class="language-plaintext highlighter-rouge">customize.sh</code> will then be responsible to install everything by itself.</p>
+<p>如果您需要更多的自定义，并且希望自己做所有事情请在<code class="language-plaintext highlighter-rouge">customize.sh</code>中标注<code class="language-plaintext highlighter-rouge">SKIPUNZIP=1</code>以跳过提取操作并应用默认permissions/secontext。请注意，这样做后，你的<code class="language-plaintext highlighter-rouge">customize.sh</code>将负责自行安装所有内容。</p>
 
-<h4 id="customizesh-environment"><code class="language-plaintext highlighter-rouge">customize.sh</code> Environment<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#customizesh-environment" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<h4 id="customizesh-environment"><code class="language-plaintext highlighter-rouge">customize.sh</code>的运行环境<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#customizesh-environment" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
 
-<p>This script will run in Magisk’s BusyBox <code class="language-plaintext highlighter-rouge">ash</code> shell with “Standalone Mode” enabled. The following variables and shell functions are available for convenience:</p>
+<p>这个脚本将在启用了“独立模式”Magisk的BusyBox <code class="language-plaintext highlighter-rouge">ash</code> shell 中运行。为了方便起见，可以使用以下变量和shell函数:</p>
 
-<h5 id="variables">Variables<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#variables" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h5>
+<h5 id="variables">变量<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#variables" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h5>
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">MAGISK_VER</code> (string): the version string of current installed Magisk (e.g. <code class="language-plaintext highlighter-rouge">v20.0</code>)</li>
-  <li><code class="language-plaintext highlighter-rouge">MAGISK_VER_CODE</code> (int): the version code of current installed Magisk (e.g. <code class="language-plaintext highlighter-rouge">20000</code>)</li>
-  <li><code class="language-plaintext highlighter-rouge">BOOTMODE</code> (bool): <code class="language-plaintext highlighter-rouge">true</code> if the module is being installed in the Magisk app</li>
-  <li><code class="language-plaintext highlighter-rouge">MODPATH</code> (path): the path where your module files should be installed</li>
-  <li><code class="language-plaintext highlighter-rouge">TMPDIR</code> (path): a place where you can temporarily store files</li>
-  <li><code class="language-plaintext highlighter-rouge">ZIPFILE</code> (path): your module’s installation zip</li>
-  <li><code class="language-plaintext highlighter-rouge">ARCH</code> (string): the CPU architecture of the device. Value is either <code class="language-plaintext highlighter-rouge">arm</code>, <code class="language-plaintext highlighter-rouge">arm64</code>, <code class="language-plaintext highlighter-rouge">x86</code>, or <code class="language-plaintext highlighter-rouge">x64</code></li>
-  <li><code class="language-plaintext highlighter-rouge">IS64BIT</code> (bool): <code class="language-plaintext highlighter-rouge">true</code> if <code class="language-plaintext highlighter-rouge">$ARCH</code> is either <code class="language-plaintext highlighter-rouge">arm64</code> or <code class="language-plaintext highlighter-rouge">x64</code></li>
-  <li><code class="language-plaintext highlighter-rouge">API</code> (int): the API level (Android version) of the device (e.g. <code class="language-plaintext highlighter-rouge">21</code> for Android 5.0)</li>
+  <li><code class="language-plaintext highlighter-rouge">MAGISK_VER</code> (string): 当前安装的Magisk的版本字符串 (例如 <code class="language-plaintext highlighter-rouge">v20.0</code>)</li>
+  <li><code class="language-plaintext highlighter-rouge">MAGISK_VER_CODE</code> (int): 当前安装的Magisk的版本代码 (例如 <code class="language-plaintext highlighter-rouge">20000</code>)</li>
+  <li><code class="language-plaintext highlighter-rouge">BOOTMODE</code> (bool): 如果模块当前安装在Magisk Manager中，则为<code class="language-plaintext highlighter-rouge">true</code></li>
+  <li><code class="language-plaintext highlighter-rouge">MODPATH</code> (path): 你的模块应该被安装到的路径</li>
+  <li><code class="language-plaintext highlighter-rouge">TMPDIR</code> (path): 一个你可以临时存储文件的路径</li>
+  <li><code class="language-plaintext highlighter-rouge">ZIPFILE</code> (path): 模块的安装包（zip）的路径</li>
+  <li><code class="language-plaintext highlighter-rouge">ARCH</code> (string): 设备的C​​PU构架。值可以是<code class="language-plaintext highlighter-rouge">arm</code>, <code class="language-plaintext highlighter-rouge">arm64</code>, <code class="language-plaintext highlighter-rouge">x86</code>, or <code class="language-plaintext highlighter-rouge">x64</code></li>
+  <li><code class="language-plaintext highlighter-rouge">IS64BIT</code> (bool): 如果<code class="language-plaintext highlighter-rouge">$ARCH</code>(上方的<code class="language-plaintext highlighter-rouge">ARCH</code>变量)为 <code class="language-plaintext highlighter-rouge">arm64</code>或<code class="language-plaintext highlighter-rouge">x64</code>，则为<code class="language-plaintext highlighter-rouge">true</code></li>
+  <li><code class="language-plaintext highlighter-rouge">API</code> (int): 设备的API级别(Android版本)(例如 <code class="language-plaintext highlighter-rouge">21</code>为Android 5.0)</li>
 </ul>
 
-<h5 id="functions">Functions<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#functions" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h5>
+<h5 id="functions">可用函数<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#functions" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h5>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ui_print &lt;msg&gt;
-    print &lt;msg&gt; to console
-    Avoid using 'echo' as it will not display in custom recovery's console
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>
+ui_print &lt;msg&gt;
+    打印(print)&lt;msg&gt;到控制台
+    避免使用'echo'，因为它不会显示在第三方的recovery的控制台中。
 
 abort &lt;msg&gt;
-    print error message &lt;msg&gt; to console and terminate the installation
-    Avoid using 'exit' as it will skip the termination cleanup steps
+    打印错误信息&lt;msg&gt;到控制台并终止安装
+    避免使用'exit'，因为它会跳过终止的清理步骤
 
-set_perm &lt;target&gt; &lt;owner&gt; &lt;group&gt; &lt;permission&gt; [context]
-    if [context] is not set, the default is "u:object_r:system_file:s0"
-    this function is a shorthand for the following commands:
-       chown owner.group target
-       chmod permission target
-       chcon context target
+set_perm &lt;文件名&gt; &lt;所有者&gt; &lt;用户组&gt; &lt;文件权限&gt; [上下文]
+    如果 [上下文] 没有设置，则默认为"u:object_r:system_file:s0"
+    该函数是以下命令的简写:
+       chown 所有者.用户组 文件名
+       chmod 权限 文件名
+       chcon 上下文 文件名
 
-set_perm_recursive &lt;directory&gt; &lt;owner&gt; &lt;group&gt; &lt;dirpermission&gt; &lt;filepermission&gt; [context]
-    if [context] is not set, the default is "u:object_r:system_file:s0"
-    for all files in &lt;directory&gt;, it will call:
-       set_perm file owner group filepermission context
-    for all directories in &lt;directory&gt; (including itself), it will call:
-       set_perm dir owner group dirpermission context
+set_perm_recursive  <目录>                <所有者> <用户组> <目录权限> <文件权限> <上下文> (默认值是: u:object_r:system_file:s0)
+
+set_perm_recursive &lt;目录&gt; &lt;所有者&gt; &lt;用户组&gt; &lt;目录权限&gt; &lt;文件权限&gt; [上下文]
+    如果 [上下文] 没有设置，则默认为"u:object_r:system_file:s0"
+    对于&lt;目录&gt;中的所有文件，它将调用:
+       set_perm 文件 所有者 用户组 文件权限 上下文
+    对于&lt;目录&gt;中的所有目录(包括自身)，它将调用:
+       set_perm 目录 所有者 用户组 目录权限 上下文
 </code></pre></div></div>
 
 <h5 id="easy-replace">Easy Replace<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#easy-replace" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h5>
