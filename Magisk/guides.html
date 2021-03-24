@@ -250,83 +250,83 @@ set_perm_recursive &lt;目录&gt; &lt;所有者&gt; &lt;用户组&gt; &lt;目录
 <ul>
   <li>post-fs-data 模式
     <ul>
-      <li>This stage is BLOCKING. The boot process is paused before execution is done, or 10 seconds have passed.</li>
-      <li>Scripts run before any modules are mounted. This allows a module developer to dynamically adjust their modules before it gets mounted.</li>
-      <li>This stage happens before Zygote is started, which pretty much means everything in Android</li>
-      <li><strong>Run scripts in this mode only if necessary!</strong></li>
+      <li>该模式以阻塞方式(BLOCKING)运行。启动会直到所有进程加载完毕后或等待10秒后才继续进行。</li>
+      <li>脚本在安装任何模块之前运行。这允许模块开发者在安装模块之前动态调整其模块。</li>
+      <li>该模式在Zygote启动前执行（这意味着所有进程已经加载完毕）。</li>
+      <li><strong>仅在必要时在此模式下运行脚本！</strong></li>
     </ul>
   </li>
-  <li>late_start service mode
+  <li>late_start service 模式
     <ul>
-      <li>This stage is NON-BLOCKING. Your script runs in parallel along with the booting process.</li>
-      <li><strong>This is the recommended stage to run most scripts!</strong></li>
+      <li>该模式以非阻塞方式(NON-BLOCKING)运行。此模式下Magisk将会与其他进程并行处理。</li>
+      <li><strong>推荐在该模式下运行大多数的脚本！</strong></li>
     </ul>
   </li>
 </ul>
 
-<p>In Magisk, there are also 2 kinds of scripts: <strong>general scripts</strong> and <strong>module scripts</strong>.</p>
+<p>在Magisk中，还有两种脚本: <strong>通用脚本</strong>和<strong>模块脚本</strong>.</p>
 
 <ul>
-  <li>General Scripts
+  <li>通用脚本
     <ul>
-      <li>Placed in <code class="language-plaintext highlighter-rouge">/data/adb/post-fs-data.d</code> or <code class="language-plaintext highlighter-rouge">/data/adb/service.d</code></li>
-      <li>Only executed if the script is executable (execution permissions, <code class="language-plaintext highlighter-rouge">chmod +x script.sh</code>)</li>
-      <li>Scripts in <code class="language-plaintext highlighter-rouge">post-fs-data.d</code> runs in post-fs-data mode, and scripts in <code class="language-plaintext highlighter-rouge">service.d</code> runs in late_start service mode.</li>
-      <li>Modules should <strong>NOT</strong> add general scripts since it violates encapsulation</li>
+      <li>放在<code class="language-plaintext highlighter-rouge">/data/adb/post-fs-data.d</code>或<code class="language-plaintext highlighter-rouge">/data/adb/service.d</code></li>
+      <li>仅在脚本可执行时执​​行(执行权限， <code class="language-plaintext highlighter-rouge">chmod +x script.sh</code>)</li>
+      <li>脚本在<code class="language-plaintext highlighter-rouge">post-fs-data.d</code>中以post-fs-data 模式运行，在<code class="language-plaintext highlighter-rouge">service.d</code>中以late_start service 模式运行。</li>
+      <li>模块不应该添加一般的脚本，因为它违反了封装</li>
     </ul>
   </li>
-  <li>Module Scripts
+  <li>模块脚本
     <ul>
-      <li>Placed in the folder of the module</li>
-      <li>Only executed if the module is enabled</li>
-      <li><code class="language-plaintext highlighter-rouge">post-fs-data.sh</code> runs in post-fs-data mode, and <code class="language-plaintext highlighter-rouge">service.sh</code> runs in late_start service mode.</li>
-      <li>Modules require boot scripts should <strong>ONLY</strong> use module scripts instead of general scripts</li>
+      <li>放置在模块的文件夹中</li>
+      <li>仅在启用了模块的情况下执行</li>
+      <li><code class="language-plaintext highlighter-rouge">post-fs-data.sh</code>在post-fs-data 模式下运行，<code class="language-plaintext highlighter-rouge">service.sh</code>在late_start service 模式下运行。</li>
+      <li>需要启动脚本的模块应<strong>仅</strong>使用模块脚本而不是常规脚本</li>
     </ul>
   </li>
 </ul>
 
-<p>These scripts will run in Magisk’s BusyBox <code class="language-plaintext highlighter-rouge">ash</code> shell with “Standalone Mode” enabled.</p>
+<p>这些脚本将在启用了“独立模式”Magisk的BusyBox <code class="language-plaintext highlighter-rouge">ash</code> shell中运行.</p>
 
-<h2 id="root-directory-overlay-system">Root Directory Overlay System<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#root-directory-overlay-system" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="root-directory-overlay-system">根目录覆盖系统<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#root-directory-overlay-system" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
-<p>Since <code class="language-plaintext highlighter-rouge">/</code> is read-only on system-as-root devices, Magisk provides an overlay system to enable developers to replace files in rootdir or add new <code class="language-plaintext highlighter-rouge">*.rc</code> scripts. This feature is designed mostly for custom kernel developers.</p>
+<p>由于<code class="language-plaintext highlighter-rouge">/</code>在system-as-root设备上是只读的, 因此Magisk提供了一个覆盖系统，使开发人员可以替换根目录中的文件或添加新的<code class="language-plaintext highlighter-rouge">*.rc</code>脚本。此功能主要是为自定义内核开发人员设计的。</p>
 
-<p>Overlay files shall be placed in the <code class="language-plaintext highlighter-rouge">overlay.d</code> folder in boot image ramdisk, and they follow these rules:</p>
+<p>覆盖文件应放在boot镜像ramdisk的<code class="language-plaintext highlighter-rouge">overlay.d</code>文件夹中并遵循以下规则:</p>
 
 <ol>
-  <li>All <code class="language-plaintext highlighter-rouge">*.rc</code> files in <code class="language-plaintext highlighter-rouge">overlay.d</code> will be read and concatenated <strong>AFTER</strong> <code class="language-plaintext highlighter-rouge">init.rc</code></li>
-  <li>Existing files can be replaced by files located at the same relative path</li>
-  <li>Files that correspond to a non-existing file will be ignored</li>
+  <li><code class="language-plaintext highlighter-rouge">overlay.d</code>中所有的<code class="language-plaintext highlighter-rouge">*.rc</code>将在<code class="language-plaintext highlighter-rouge">init.rc</code><strong>之后</strong>读取并链接</li>
+  <li>现有文件可以被位于相同相对路径的文件替换</li>
+  <li>与不存在的文件对应的文件将被忽略</li>
 </ol>
 
-<p>In order to have additional files that you want to reference in your custom <code class="language-plaintext highlighter-rouge">*.rc</code> scripts, add them in <code class="language-plaintext highlighter-rouge">overlay.d/sbin</code>. The 3 rules above does not apply to everything in this specific folder, as they will directly be copied to Magisk’s internal <code class="language-plaintext highlighter-rouge">tmpfs</code> directory (which used to always be located at <code class="language-plaintext highlighter-rouge">/sbin</code>).</p>
+<p>为了在自定义<code class="language-plaintext highlighter-rouge">*.rc</code>脚本中引用其他文件, 请在<code class="language-plaintext highlighter-rouge">overlay.d/sbin</code>中添加它们。上面的3条规则不适用于此特定文件夹中的所有内容，因为它们将直接复制到Magisk的内部<code class="language-plaintext highlighter-rouge">tmpfs</code>目录(该目录始终位于<code class="language-plaintext highlighter-rouge">/sbin</code>)。</p>
 
-<p>Due to changes in Android 11, the <code class="language-plaintext highlighter-rouge">/sbin</code> folder is no longer guaranteed to exist. In that case, Magisk randomly generates the <code class="language-plaintext highlighter-rouge">tmpfs</code> folder. Every occurrence of the pattern <code class="language-plaintext highlighter-rouge">${MAGISKTMP}</code> in your <code class="language-plaintext highlighter-rouge">*.rc</code> scripts will be replaced with the Magisk <code class="language-plaintext highlighter-rouge">tmpfs</code> folder when <code class="language-plaintext highlighter-rouge">magiskinit</code> injects it into <code class="language-plaintext highlighter-rouge">init.rc</code>. This also works on pre Android 11 devices as <code class="language-plaintext highlighter-rouge">${MAGISKTMP}</code> will simply be replaced with <code class="language-plaintext highlighter-rouge">/sbin</code> in this case, so the best practice is to <strong>NEVER</strong> hardcode <code class="language-plaintext highlighter-rouge">/sbin</code> in your <code class="language-plaintext highlighter-rouge">*.rc</code> scripts when referencing additional files.</p>
+<p>由于Android 11中的更改​​，不再保证<code class="language-plaintext highlighter-rouge">/sbin</code> 文件夹的存在。这种情况下，Magisk会随机生成<code class="language-plaintext highlighter-rouge">tmpfs</code>文件夹。在你的<code class="language-plaintext highlighter-rouge">*.rc</code>脚本中所有的<code class="language-plaintext highlighter-rouge">${MAGISKTMP}</code>会在<code class="language-plaintext highlighter-rouge">magiskinit</code>注入到<code class="language-plaintext highlighter-rouge">init.rc</code>中时，被Magisk <code class="language-plaintext highlighter-rouge">tmpfs</code>文件夹替换。这也可以在Android 11之前的设备上使用，因为在这种情况下<code class="language-plaintext highlighter-rouge">${MAGISKTMP}</code>将简单地被替换为<code class="language-plaintext highlighter-rouge">/sbin</code>，因此最佳实践是在引用其他文件时，<strong>不要</strong>在<code class="language-plaintext highlighter-rouge">*.rc</code>脚本中编码<code class="language-plaintext highlighter-rouge">/sbin</code>。</p>
 
-<p>Here is an example of how to setup <code class="language-plaintext highlighter-rouge">overlay.d</code> with custom <code class="language-plaintext highlighter-rouge">*.rc</code> script:</p>
+<p>这是一个如何使用自定义<code class="language-plaintext highlighter-rouge">*.rc</code>脚本设置<code class="language-plaintext highlighter-rouge">overlay.d</code>的示例:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ramdisk
 │
 ├── overlay.d
 │&nbsp;&nbsp; ├── sbin
-│   │   ├── libfoo.ko      &lt;--- These 2 files will be copied
-│&nbsp;&nbsp; │&nbsp;&nbsp; └── myscript.sh    &lt;--- to Magisk's tmpfs directory
-│&nbsp;&nbsp; ├── custom.rc&nbsp;&nbsp;        &lt;--- This file will be injected into init.rc
+│   │   ├── libfoo.ko      &lt;--- 这两个文件将被复制
+│&nbsp;&nbsp; │&nbsp;&nbsp; └── myscript.sh    &lt;--- 到Magisk的tmpfs目录
+│&nbsp;&nbsp; ├── custom.rc&nbsp;&nbsp;        &lt;--- 该文件将被注入到init.rc中
 │&nbsp;&nbsp; ├── res
-│&nbsp;&nbsp; │&nbsp;&nbsp; └── random.png     &lt;--- This file will replace /res/random.png
-│&nbsp;&nbsp; └── new_file           &lt;--- This file will be ignored because
-│                               /new_file does not exist
+│&nbsp;&nbsp; │&nbsp;&nbsp; └── random.png     &lt;--- 该文件将替换/res/random.png
+│&nbsp;&nbsp; └── new_file           &lt;--- 该文件将被忽略，因为
+│                               /new_file不存在
 ├── res
-│&nbsp;&nbsp; └── random.png         &lt;--- This file will be replaced by
+│&nbsp;&nbsp; └── random.png         &lt;--- 该文件将被替换为
 │                               /overlay.d/res/random.png
 ├── ...
-├── ...  /* The rest of initramfs files */
+├── ...  /* 其余的initramfs文件 */
 │
 </code></pre></div></div>
 
-<p>Here is an example of the <code class="language-plaintext highlighter-rouge">custom.rc</code>:</p>
+<p>这是一个示例<code class="language-plaintext highlighter-rouge">custom.rc</code>:</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># Use ${MAGISKTMP} to refer to Magisk's tmpfs directory
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># 使用${MAGISKTMP}引用Magisk的tmpfs目录
 
 on early-init
     setprop sys.example.foo bar
