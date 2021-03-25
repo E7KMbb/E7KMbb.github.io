@@ -4,7 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <!-- Begin Jekyll SEO tag v2.7.1 -->
-<title>Internal Details | Magisk</title>
+<title>内部细节 | Magisk</title>
 <meta name="generator" content="Jekyll v3.9.0">
 <meta property="og:title" content="Internal Details">
 <meta property="og:locale" content="en_US">
@@ -26,123 +26,121 @@
       <h1><a href="https://topjohnwu.github.io/Magisk/">Magisk</a></h1>
       
 
-      <h1 id="internal-details">Internal Details</h1>
+      <h1 id="internal-details">内部细节</h1>
 
-<h2 id="file-structure">File Structure<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#file-structure" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="file-structure">文件结构<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#file-structure" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
-<h3 id="paths-in-magisk-tmpfs-directory">Paths in “Magisk tmpfs directory”<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#paths-in-magisk-tmpfs-directory" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<h3 id="paths-in-magisk-tmpfs-directory">“Magisk tmpfs目录”中的路径<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#paths-in-magisk-tmpfs-directory" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
 
-<p>Magisk will mount a <code class="language-plaintext highlighter-rouge">tmpfs</code> directory to store some temporary data. For devices with the <code class="language-plaintext highlighter-rouge">/sbin</code> folder, it will be chosen as it will also act as an overlay to inject binaries into <code class="language-plaintext highlighter-rouge">PATH</code>. From Android 11 onwards, the <code class="language-plaintext highlighter-rouge">/sbin</code> folder might not exist, so Magisk will randomly create a folder under <code class="language-plaintext highlighter-rouge">/dev</code> and use it as the base folder.</p>
+<p>Magisk挂载一个<code class="language-plaintext highlighter-rouge">tmpfs</code> 目录来存储一些临时数据。对于具有<code class="language-plaintext highlighter-rouge">/sbin</code>文件夹的设备，将选择它，因为它将用作将二进制文件注入<code class="language-plaintext highlighter-rouge">PATH</code>的覆盖层。从Android 11 开始，<code class="language-plaintext highlighter-rouge">/sbin</code>可能不存在，所以Magisk将在<code class="language-plaintext highlighter-rouge">/dev</code>下随机创建一个文件夹并将其用作基本文件夹。</p>
 
-<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># In order to get the current base folder Magisk is using,
-# use the command `magisk --path`.
-# Binaries like magisk, magiskinit, and all symlinks to
-# applets are directly stored in this path. This means when
-# this is /sbin, these binaries will be directly in PATH.
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code># 为了获得Magisk当前正在使用的基本文件夹，
+# 使用命令`magisk --path`.
+# 诸如magisk, magiskinit, 之类的二进制文件
+# 以及所有指向指令的符号链接都直接存储在此路径中。
+# 这意味着当它为/sbin时，这些二进制文件将直接位于PATH中。
 MAGISKPATH=$(magisk --path)
 
-# Magisk internal stuffs
+# Magisk内部物品
 MAGISKTMP=$MAGISKBASE/.magisk
 
-# Magisk's BusyBox directory. Within this folder stores
-# the busybox binary and symlinks to all of its applets.
-# Any usage of this directory is deprecated, please
-# directly call /data/adb/magisk/busybox and use
-# BusyBox's ASH Standalone mode.
-# The creation of this path will be removed in the future.
+# Magisk的BusyBox目录。 在此文件夹中存储busybox二进制文件和指向
+# 其所有小程序的符号链接。
+# 不建议使用此目录，请直接调用/data/adb/magisk/busybox 
+# 并使用BusyBox的ASH独立模式。
+# 将来将删除此路径的创建。
 $MAGISKTMP/busybox
 
-# /data/adb/modules will be bind mounted here.
-# The original folder is not used due to nosuid mount flag.
+# /data/adb/modules 将在此处绑定安装。
+# 由于nosuid挂载标志，未使用原始文件夹。
 $MAGISKTMP/modules
 
-# The current Magisk installation config
+# 当前的Magisk安装配置
 $MAGISKTMP/config
 
-# Partition mirrors
-# Each directory in this path will be mounted with the
-# partition of its directory name.
-# e.g. system, system_ext, vendor, data ...
+# 分区镜像
+# 此路径中的每个目录都将
+# 使用其目录名称的分区进行挂载。
+# 例如 system, system_ext, vendor, data ...
 $MAGISKTMP/mirror
 
-# Block devices Magisk creates internally to mount mirrors.
+# Magisk在内部创建块设备以安装镜像。
 $MAGISKTMP/block
 
-# Root directory patch files
-# On system-as-root devices, / is not writable.
-# All pre-init patched files are stored here and bind mounted.
+# 根目录补丁文件
+# 在 system-as-root 设备上, / 不可写.
+# 所有预初始化的修补文件都存储在此处并绑定安装。
 $MAGISKTMP/rootdir
 </code></pre></div></div>
 
-<h3 id="paths-in-data">Paths in <code class="language-plaintext highlighter-rouge">/data</code><a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#paths-in-data" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<h3 id="paths-in-data"><code class="language-plaintext highlighter-rouge">/data</code>中的路径<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#paths-in-data" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
 
-<p>Some binaries and files should be stored on non-volatile storages in <code class="language-plaintext highlighter-rouge">/data</code>. In order to prevent detection, everything has to be stored somewhere safe and undetectable in <code class="language-plaintext highlighter-rouge">/data</code>. The folder <code class="language-plaintext highlighter-rouge">/data/adb</code> was chosen because of the following advantages:</p>
+<p>一些二进制文件和文件应存储在<code class="language-plaintext highlighter-rouge">/data</code>.的非易失性存储中。为了防止被检测到，所有东西都必须存储在安全的地方，并且在<code class="language-plaintext highlighter-rouge">/data</code>中无法被检测到。选择该文件夹<code class="language-plaintext highlighter-rouge">/data/adb</code>是因为具有以下优点:</p>
 
 <ul>
-  <li>It is an existing folder on modern Android, so it cannot be used as an indication of the existence of Magisk.</li>
-  <li>The permission of the folder is by default <code class="language-plaintext highlighter-rouge">700</code>, owner as <code class="language-plaintext highlighter-rouge">root</code>, so non-root processes are unable to enter, read, write the folder in any possible way.</li>
-  <li>The folder is labeled with secontext <code class="language-plaintext highlighter-rouge">u:object_r:adb_data_file:s0</code>, and very few processes have the permission to do any interaction with that secontext.</li>
-  <li>The folder is located in <em>Device encrypted storage</em>, so it is accessible as soon as data is properly mounted in FBE (File-Based Encryption) devices.</li>
+  <li>它是现在Android上的现有的文件夹，所以它不能作为一个指示Magisk的存在。</li>
+  <li>文件夹的权限默认为<code class="language-plaintext highlighter-rouge">700</code>，所有者为<code class="language-plaintext highlighter-rouge">root</code>，因此非root进程无法以任何可能的方式进入，读取和写入文件夹。</li>
+  <li>该文件夹标有上下文<code class="language-plaintext highlighter-rouge">u:object_r:adb_data_file:s0</code>，并且几乎没有进程有权与该上下文进行任何交互。</li>
+  <li>该文件夹位于设备加密存储中，因此只要将数据正确装入FBE（基于文件的加密）设备中就可以访问该文件夹。</li>
 </ul>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>SECURE_DIR=/data/adb
 
-# Folder storing general post-fs-data scripts
+# 储存一般post-fs-data脚本的文件夹
 $SECURE_DIR/post-fs-data.d
 
-# Folder storing general late_start service scripts
+# 储存一般late_start service脚本的文件夹
 $SECURE_DIR/service.d
 
-# Magisk modules
+# Magisk模块
 $SECURE_DIR/modules
 
-# Magisk modules that are pending for upgrade
-# Module files are not safe to be modified when mounted
-# Modules installed through the Magisk app will be stored here
-# and will be merged into $SECURE_DIR/modules in the next reboot
+# 等待升级的Magisk模块
+# 在挂载时修改模块文件是不安全的
+# 通过Magisk应用安装的模块将存储在此处
+# 并在下一次重新启动时合并到$SECURE_DIR/modules
 $SECURE_DIR/modules_update
 
-# Database storing settings and root permissions
+# 数据库存储设置和root权限
 MAGISKDB=$SECURE_DIR/magisk.db
 
-# All magisk related binaries, including busybox,
-# scripts, and magisk binaries. Used in supporting
-# module installation, addon.d, the Magisk app etc.
+#所有与magisk相关的二进制文件，包括busybox、脚本和magisk二进制文件。
+#用于支持模块安装，addon.d、Magisk app等。
 DATABIN=$SECURE_DIR/magisk
 
 </code></pre></div></div>
 
-<h2 id="magisk-booting-process">Magisk Booting Process<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#magisk-booting-process" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="magisk-booting-process">Magisk启动过程<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#magisk-booting-process" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
-<h3 id="pre-init">Pre-Init<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#pre-init" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<h3 id="pre-init">预初始化<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#pre-init" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
 
-<p><code class="language-plaintext highlighter-rouge">magiskinit</code> will replace <code class="language-plaintext highlighter-rouge">init</code> as the first program to run.</p>
+<p><code class="language-plaintext highlighter-rouge">magiskinit</code>将替换<code class="language-plaintext highlighter-rouge">init</code>作为第一个要运行的进程。</p>
 
 <ul>
-  <li>Early mount required partitions. On legacy system-as-root devices, we switch root to system; on 2SI devices, we patch fstab and execute the original <code class="language-plaintext highlighter-rouge">init</code> to mount partitions for us.</li>
-  <li>Load sepolicy either from <code class="language-plaintext highlighter-rouge">/sepolicy</code>, precompiled sepolicy in vendor, or compile split sepolicy</li>
-  <li>Patch sepolicy rules and dump to <code class="language-plaintext highlighter-rouge">/sepolicy</code> or <code class="language-plaintext highlighter-rouge">/sbin/.se</code> or <code class="language-plaintext highlighter-rouge">/dev/.se</code></li>
-  <li>Patch <code class="language-plaintext highlighter-rouge">init</code> or <code class="language-plaintext highlighter-rouge">libselinux.so</code> to force the system to load the patched policies</li>
-  <li>Inject magisk services into <code class="language-plaintext highlighter-rouge">init.rc</code></li>
-  <li>Execute the original <code class="language-plaintext highlighter-rouge">init</code> to continue the boot process</li>
+  <li>早期安装所需的分区。在旧的system-as-root设备上, 我们将root切换到system;在2SI设备上，我们修补fstab并执行原始的<code class="language-plaintext highlighter-rouge">init</code>来为我们挂载分区。</li>
+  <li>从<code class="language-plaintext highlighter-rouge">/sepolicy</code>加载sepolicy，在vendor中预编译sepolicy，或编译split sepolicy</li>
+  <li>将sepolicy规则补丁到<code class="language-plaintext highlighter-rouge">/sepolicy</code>或<code class="language-plaintext highlighter-rouge">/sbin/.se</code>或<code class="language-plaintext highlighter-rouge">/dev/.se</code></li>
+  <li>对<code class="language-plaintext highlighter-rouge">init</code>或<code class="language-plaintext highlighter-rouge">libselinux.so</code>进行补丁，强制系统加载补丁策略</li>
+  <li>将magisk服务注入<code class="language-plaintext highlighter-rouge">init.rc</code></li>
+  <li>执行初始<code class="language-plaintext highlighter-rouge">init</code>以继续引导进程</li>
 </ul>
 
 <h3 id="post-fs-data">post-fs-data<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#post-fs-data" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
 
-<p>This triggers on <code class="language-plaintext highlighter-rouge">post-fs-data</code> when <code class="language-plaintext highlighter-rouge">/data</code> is decrypted and mounted. The daemon <code class="language-plaintext highlighter-rouge">magiskd</code> will be launched, post-fs-data scripts are executed, and module files are magic mounted.</p>
+<p>当<code class="language-plaintext highlighter-rouge">/data</code>被解密和挂载时，这会在<code class="language-plaintext highlighter-rouge">post-fs-data</code>上触发。将启动守护进程<code class="language-plaintext highlighter-rouge">magiskd</code>，执行post-fs-data脚本，并magic挂载模块文件</p>
 
 <h3 id="late_start">late_start<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#late_start" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
 
-<p>Later in the booting process, the class <code class="language-plaintext highlighter-rouge">late_start</code> will be triggered, and Magisk “service” mode will be started. In this mode, service scripts are executed.</p>
+<p>在启动过程的后期，<code class="language-plaintext highlighter-rouge">late_start</code>将被触发，Magisk“服务”模式将被启动。在此模式下，执行服务脚本。</p>
 
-<h2 id="resetprop">Resetprop<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#resetprop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="resetprop">重置prop<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#resetprop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
-<p>Usually, system properties are designed to only be updated by <code class="language-plaintext highlighter-rouge">init</code> and read-only to non-root processes. With root you can change properties by sending requests to <code class="language-plaintext highlighter-rouge">property_service</code> (hosted by <code class="language-plaintext highlighter-rouge">init</code>) using commands such as <code class="language-plaintext highlighter-rouge">setprop</code>, but changing read-only props (props that start with <code class="language-plaintext highlighter-rouge">ro.</code> like <code class="language-plaintext highlighter-rouge">ro.build.product</code>) and deleting properties are still prohibited.</p>
+<p>通常，系统属性被设计为只能通过<code class="language-plaintext highlighter-rouge">init</code>来更新，并且对于非根进程是只读的。使用root可以通过使用诸如<code class="language-plaintext highlighter-rouge">setprop</code>之类的命令向 <code class="language-plaintext highlighter-rouge">property_service</code>（由<code class="language-plaintext highlighter-rouge">init</code>托管）发送请求来更改属性，但是仍然禁止更改只读属性（以<code class="language-plaintext highlighter-rouge">ro.</code>开头的属性，例如<code class="language-plaintext highlighter-rouge">ro.build.product</code>）和删除属性。</p>
 
-<p><code class="language-plaintext highlighter-rouge">resetprop</code> is implemented by distilling out the source code related to system properties from AOSP and patched to allow direct modification to property area, or <code class="language-plaintext highlighter-rouge">prop_area</code>, bypassing the need to go through <code class="language-plaintext highlighter-rouge">property_service</code>. Since we are bypassing <code class="language-plaintext highlighter-rouge">property_service</code>, there are a few caveats:</p>
+<p><code class="language-plaintext highlighter-rouge">resetprop</code>是通过从AOSP中提取出与系统属性相关的源代码来实现的，并通过修补来允许直接修改property area或<code class="language-plaintext highlighter-rouge">prop_area</code>，而无需经过<code class="language-plaintext highlighter-rouge">prop_area</code>。由于我们绕过了<code class="language-plaintext highlighter-rouge">prop_area</code>，因此需要注意一些事项:</p>
 
 <ul>
-  <li><code class="language-plaintext highlighter-rouge">on property:foo=bar</code> actions registered in <code class="language-plaintext highlighter-rouge">*.rc</code> scripts will not be triggered if property changes does not go through <code class="language-plaintext highlighter-rouge">property_service</code>. The default set property behavior of <code class="language-plaintext highlighter-rouge">resetprop</code> matches <code class="language-plaintext highlighter-rouge">setprop</code>, which <strong>WILL</strong> trigger events (implemented by first deleting the property then set it via <code class="language-plaintext highlighter-rouge">property_service</code>). There is a flag <code class="language-plaintext highlighter-rouge">-n</code> to disable it if you need this special behavior.</li>
+  <li><code class="language-plaintext highlighter-rouge">on property:foo=bar</code> 如果属性更改没有通过<code class="language-plaintext highlighter-rouge">property_service</code>进行，则不会触发<code class="language-plaintext highlighter-rouge">*.rc</code>脚本。<code class="language-plaintext highlighter-rouge">resetprop</code>的默认设置属性行为与<code class="language-plaintext highlighter-rouge">setprop</code>匹配，这将触发事件(通过首先删除属性，然后通过<code class="language-plaintext highlighter-rouge">property_service</code>设置它来实现)。如果需要这种特殊行为，可以使用<code class="language-plaintext highlighter-rouge">-n</code>标记禁用它。</li>
   <li>persist properties (props that starts with <code class="language-plaintext highlighter-rouge">persist.</code>, like <code class="language-plaintext highlighter-rouge">persist.sys.usb.config</code>) are stored in both <code class="language-plaintext highlighter-rouge">prop_area</code> and <code class="language-plaintext highlighter-rouge">/data/property</code>. By default, deleting props will <strong>NOT</strong> remove it from persistent storage, meaning the property will be restored after the next reboot; reading props will <strong>NOT</strong> read from persistent storage, as this is the behavior of <code class="language-plaintext highlighter-rouge">getprop</code>. With the flag <code class="language-plaintext highlighter-rouge">-p</code>, deleting props will remove the prop in <strong>BOTH</strong> <code class="language-plaintext highlighter-rouge">prop_area</code> and <code class="language-plaintext highlighter-rouge">/data/property</code>, and reading props will be read from <strong>BOTH</strong> <code class="language-plaintext highlighter-rouge">prop_area</code> and persistent storage.</li>
 </ul>
 
