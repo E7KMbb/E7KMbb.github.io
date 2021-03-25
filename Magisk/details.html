@@ -23,7 +23,7 @@
   <body>
     <div class="container-lg px-3 my-5 markdown-body">
       
-      <h1><a href="https://topjohnwu.github.io/Magisk/">Magisk</a></h1>
+      <h1><a href="https://e7kmbb.github.io/Magisk/">Magisk</a></h1>
       
 
       <h1 id="internal-details">内部细节</h1>
@@ -133,7 +133,7 @@ DATABIN=$SECURE_DIR/magisk
 
 <p>在启动过程的后期，<code class="language-plaintext highlighter-rouge">late_start</code>将被触发，Magisk“服务”模式将被启动。在此模式下，执行服务脚本。</p>
 
-<h2 id="resetprop">重置prop<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#resetprop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="resetprop">Resetprop<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#resetprop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
 <p>通常，系统属性被设计为只能通过<code class="language-plaintext highlighter-rouge">init</code>来更新，并且对于非根进程是只读的。使用root可以通过使用诸如<code class="language-plaintext highlighter-rouge">setprop</code>之类的命令向 <code class="language-plaintext highlighter-rouge">property_service</code>（由<code class="language-plaintext highlighter-rouge">init</code>托管）发送请求来更改属性，但是仍然禁止更改只读属性（以<code class="language-plaintext highlighter-rouge">ro.</code>开头的属性，例如<code class="language-plaintext highlighter-rouge">ro.build.product</code>）和删除属性。</p>
 
