@@ -41,7 +41,7 @@ su -&gt; magisk
 
 <p>Note: The Magisk zip you download only contains <code class="language-plaintext highlighter-rouge">magiskboot</code>, <code class="language-plaintext highlighter-rouge">magiskinit</code>, and <code class="language-plaintext highlighter-rouge">magiskinit64</code>. The binary <code class="language-plaintext highlighter-rouge">magisk</code> is compressed and embedded into <code class="language-plaintext highlighter-rouge">magiskinit(64)</code>. Push <code class="language-plaintext highlighter-rouge">magiskinit(64)</code> to your device and run <code class="language-plaintext highlighter-rouge">./magiskinit(64) -x magisk &lt;path&gt;</code> to extract <code class="language-plaintext highlighter-rouge">magisk</code> out of the binary.</p>
 
-<h3 id="magiskboot">magiskboot<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/tools.html#magiskboot" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<h3 id="magiskboot">magiskboot<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/tools.html#magiskboot" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
 <p>A tool to unpack / repack boot images, parse / patch / extract cpio, patch dtb, hex patch binaries, and compress / decompress files with multiple algorithms.</p>
 
 <p><code class="language-plaintext highlighter-rouge">magiskboot</code> natively supports (which means it does not rely on external tools) common compression formats including <code class="language-plaintext highlighter-rouge">gzip</code>, <code class="language-plaintext highlighter-rouge">lz4</code>, <code class="language-plaintext highlighter-rouge">lz4_legacy</code> (<a href="https://events.static.linuxfound.org/sites/events/files/lcjpcojp13_klee.pdf">only used on LG</a>), <code class="language-plaintext highlighter-rouge">lzma</code>, <code class="language-plaintext highlighter-rouge">xz</code>, and <code class="language-plaintext highlighter-rouge">bzip2</code>.</p>
@@ -134,10 +134,10 @@ Supported actions:
     Supported methods: bzip2 gzip lz4 lz4_legacy lz4_lg lzma xz
 </code></pre></div></div>
 
-<h3 id="magiskinit">magiskinit<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/tools.html#magiskinit" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
-<p>This binary will replace <code class="language-plaintext highlighter-rouge">init</code> in the ramdisk of a Magisk patched boot image. It is originally created for supporting devices using system-as-root, but the tool is extended to support all devices and became a crucial part of Magisk. More details can be found in the <strong>Pre-Init</strong> section in <a href="https://topjohnwu.github.io/Magisk/details.html#magisk-booting-process">Magisk Booting Process</a>.</p>
+<h3 id="magiskinit">magiskinit<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/tools.html#magiskinit" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<p>This binary will replace <code class="language-plaintext highlighter-rouge">init</code> in the ramdisk of a Magisk patched boot image. It is originally created for supporting devices using system-as-root, but the tool is extended to support all devices and became a crucial part of Magisk. More details can be found in the <strong>Pre-Init</strong> section in <a href="https://e7kmbb.github.io/Magisk/details.html#magisk-booting-process">Magisk Booting Process</a>.</p>
 
-<h3 id="magiskpolicy">magiskpolicy<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/tools.html#magiskpolicy" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<h3 id="magiskpolicy">magiskpolicy<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/tools.html#magiskpolicy" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
 <p>(This tool is aliased to <code class="language-plaintext highlighter-rouge">supolicy</code> for compatibility with SuperSU’s sepolicy tool)</p>
 
 <p>An applet of <code class="language-plaintext highlighter-rouge">magiskinit</code>. This tool could be used for advanced developers to modify SELinux policies. In common scenarios like Linux server admins, they would directly modify the SELinux policy sources (<code class="language-plaintext highlighter-rouge">*.te</code>) and recompile the <code class="language-plaintext highlighter-rouge">sepolicy</code> binary, but here on Android we directly patch the binary file (or runtime policies).</p>
@@ -214,7 +214,7 @@ Supported policy statements:
 "genfscon fs_name partial_path fs_context"
 </code></pre></div></div>
 
-<h3 id="magisk">magisk<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/tools.html#magisk" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<h3 id="magisk">magisk<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/tools.html#magisk" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
 <p>When the magisk binary is called with the name <code class="language-plaintext highlighter-rouge">magisk</code>, it works as a utility tool with many helper functions and the entry points for several Magisk services.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: magisk [applet [arguments]...]
@@ -244,7 +244,7 @@ Available applets:
     su, resetprop, magiskhide
 </code></pre></div></div>
 
-<h3 id="su">su<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/tools.html#su" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<h3 id="su">su<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/tools.html#su" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
 <p>An applet of <code class="language-plaintext highlighter-rouge">magisk</code>, the MagiskSU entry point. Good old <code class="language-plaintext highlighter-rouge">su</code> command.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: su [options] [-] [user [argument...]]
@@ -264,8 +264,8 @@ Options:
 
 <p>Note: even though the <code class="language-plaintext highlighter-rouge">-Z, --context</code> option is not listed above, the option still exists for CLI compatibility with apps designed for SuperSU. However the option is silently ignored since it’s no longer relevant.</p>
 
-<h3 id="resetprop">resetprop<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/tools.html#resetprop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
-<p>An applet of <code class="language-plaintext highlighter-rouge">magisk</code>. An advanced system property manipulation utility. Check the <a href="https://topjohnwu.github.io/Magisk/details.html#resetprop">Resetprop Details</a> for more background information.</p>
+<h3 id="resetprop">resetprop<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/tools.html#resetprop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<p>An applet of <code class="language-plaintext highlighter-rouge">magisk</code>. An advanced system property manipulation utility. Check the <a href="https://e7kmbb.github.io/Magisk/details.html#resetprop">Resetprop Details</a> for more background information.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: resetprop [flags] [options...]
 
@@ -285,7 +285,7 @@ Flags:
            (this flag only affects getprop and delprop)
 </code></pre></div></div>
 
-<h3 id="magiskhide">magiskhide<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/tools.html#magiskhide" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<h3 id="magiskhide">magiskhide<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/tools.html#magiskhide" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
 <p>An applet of <code class="language-plaintext highlighter-rouge">magisk</code>, the CLI to control MagiskHide. Use this tool to communicate with the daemon to change MagiskHide settings.</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Usage: magiskhide [action [arguments...] ]

@@ -32,7 +32,7 @@
       
       <p>翻译不易，如果这篇指南帮到了你，你可以给我<a href="https://docs.qq.com/doc/DWVJKWVVDWURQZUZK?disableReturnList=1&_from=1">捐赠</a>(当然,不捐赠也没关系)</p>
 
-<h2 id="busybox">BusyBox<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#busybox" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="busybox">BusyBox<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#busybox" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 <p>Magisk附带了功能完整的BusyBox二进制文件(包括对SELinux的完整支持)。执行文件位于<code class="language-plaintext highlighter-rouge">/data/adb/magisk/busybox</code>。Magisk的BusyBox支持运行时可切换的“ASH Standalone Shell Mode(ASH独立Shell模式)”。这种独立模式的意思是，在<code class="language-plaintext highlighter-rouge">ash</code>shell的中的BusyBox运行时，无论<code class="language-plaintext highlighter-rouge">PATH</code>的值为何，每个命令都将直接使用BusyBox中的应用(子命令)。例如，就像<code class="language-plaintext highlighter-rouge">ls</code>，<code class="language-plaintext highlighter-rouge">rm</code>，<code class="language-plaintext highlighter-rouge">chmod</code> 命令一样。它们将<strong>不在</strong>使用<code class="language-plaintext highlighter-rouge">PATH</code>(在Android中，默认为<code class="language-plaintext highlighter-rouge">/system/bin/ls</code>，<code class="language-plaintext highlighter-rouge">/system/bin/rm</code>，和<code class="language-plaintext highlighter-rouge">/system/bin/chmod</code>。)，而是直接调用Magisk内部的BusyBox应用(子命令)。这样可以确保脚本始终在可预测的环境中运行，并且无论运行在哪个Android版本上，始终具有完整的命令集。要强制命令<em>不使用</em>BusyBox，必须使用完整路径调用可执行文件。</p>
 
 <p>在启用了<code class="language-plaintext highlighter-rouge">ash</code>的独立模式的情况下，Magisk中运行的每个单独的shell脚本都将在内部的BusyBox的shell中执行。对于与第三方开发者而言，这包括所有引导脚本和模块安装脚本。</p>
@@ -46,7 +46,7 @@
 
 <p>为确保所有后续的<code class="language-plaintext highlighter-rouge">sh</code>执行的shell也都以独立模式运行，推荐使用1方案(这是Magisk和Magisk应用程序内部使用的方法)，因为环境变量一直继承到子进程。</p>
 
-<h2 id="magisk-modules">Magisk模块<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#magisk-modules" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="magisk-modules">Magisk模块<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#magisk-modules" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 <p>Magisk模块的文件在<code class="language-plaintext highlighter-rouge">/data/adb/modules</code>中具有以下结构:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>/data/adb/modules
@@ -98,7 +98,7 @@
 ├── .
 </code></pre></div></div>
 
-<h4 id="moduleprop">module.prop<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#moduleprop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<h4 id="moduleprop">module.prop<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#moduleprop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
 
 <p>这是<strong>标准的</strong><code class="language-plaintext highlighter-rouge">module.prop</code>格式</p>
 
@@ -118,23 +118,23 @@ description=&lt;string&gt;
   <li>请确保使用<code class="language-plaintext highlighter-rouge">UNIX (LF)</code>类型换行符，而不是<code class="language-plaintext highlighter-rouge">Windows (CR+LF)</code>或<code class="language-plaintext highlighter-rouge">Macintosh (CR)</code>。</li>
 </ul>
 
-<h4 id="shell-scripts-sh">Shell脚本(<code class="language-plaintext highlighter-rouge">*.sh</code>)<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#shell-scripts-sh" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
-<p>请阅读<a href="https://topjohnwu.github.io/Magisk/guides.html#boot-scripts">启动脚本</a>部分，了解<code class="language-plaintext highlighter-rouge">post-fs-data.sh</code>与<code class="language-plaintext highlighter-rouge">service.sh</code>之间的差异。对于大多数模块开发者，<code class="language-plaintext highlighter-rouge">service.sh</code>如果只需运行启动脚本那便足够了。</p>
+<h4 id="shell-scripts-sh">Shell脚本(<code class="language-plaintext highlighter-rouge">*.sh</code>)<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#shell-scripts-sh" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<p>请阅读<a href="https://e7kmbb.github.io/Magisk/guides.html#boot-scripts">启动脚本</a>部分，了解<code class="language-plaintext highlighter-rouge">post-fs-data.sh</code>与<code class="language-plaintext highlighter-rouge">service.sh</code>之间的差异。对于大多数模块开发者，<code class="language-plaintext highlighter-rouge">service.sh</code>如果只需运行启动脚本那便足够了。</p>
 
 <p>在所有的模块脚本中，请使用<code class="language-plaintext highlighter-rouge">MODDIR=${0%/*}</code>来获取模块的基本目录信息;千万<strong>不要</strong>在脚本中编码模块目录。</p>
 
-<h4 id="systemprop">system.prop<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#systemprop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<h4 id="systemprop">system.prop<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#systemprop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
 <p>该文件的格式与<code class="language-plaintext highlighter-rouge">build.prop</code>相同。每行包含<code class="language-plaintext highlighter-rouge">[key]=[value]</code>。</p>
 
-<h4 id="sepolicyrule">sepolicy.rule<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#sepolicyrule" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<h4 id="sepolicyrule">sepolicy.rule<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#sepolicyrule" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
 <p>如果您的模块需要一些其他的sepolicy补丁，请将这些规则添加到此文件中。 模块安装程序脚本和Magisk的守护进程将确保将此文件复制到<code class="language-plaintext highlighter-rouge">magiskinit</code>，它可以读取预初始化的位置，以确保正确插入这些规则。</p>
 
 <p>该文件中的每一行都将被视为策略声明。要详细了解策略声明的格式，请查看<a href="https://e7kmbb.github.io/Magisk/tools.html#magiskpolicy">magiskpolicy</a>的文档</p>
 
-<h4 id="the-system-folder"><code class="language-plaintext highlighter-rouge">system</code>文件夹<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#the-system-folder" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<h4 id="the-system-folder"><code class="language-plaintext highlighter-rouge">system</code>文件夹<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#the-system-folder" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
 <p>您希望Magisk为您替换/插入的所有文件都应放在此文件夹中。请查看<a href="https://e7kmbb.github.io/Magisk/details.html#magic-mount">Magic挂载</a> 部分，以了解Magisk如何挂载文件。</p>
 
-<h2 id="magisk-module-installer">Magisk模块安装程序<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#magisk-module-installer" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="magisk-module-installer">Magisk模块安装程序<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#magisk-module-installer" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
 <p>Magisk模块安装程序是打包成zip文件的Magisk模块，可以在Magisk应用程序或第三方recovery(如TWRP)中进行刷入。安装程序的文件结构与Magisk模块的文件结构相同(请查看上一部分以获取更多信息)。最简单的Magisk模块安装程序只是一个打包为zip文件的Magisk模块，此外还包含以下文件:</p>
 
@@ -161,13 +161,13 @@ description=&lt;string&gt;
 │
 </code></pre></div></div>
 
-<h4 id="customization">自定义<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#customization" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<h4 id="customization">自定义<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#customization" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
 
 <p>如果您需要自定义模块安装过程，则可以选择在安装程序中创建一个名为<code class="language-plaintext highlighter-rouge">customize.sh</code>的脚本。这个脚本会在所有文件以默认permissions和secontext应用后，由update-binary<em>调用</em>(不是执行！)。如果您的模块包含基于ABI的其他文件，或者您需要为某些文件(例如<code class="language-plaintext highlighter-rouge">/system/bin</code>中的文件)，设置特殊的permissions/secontext，这将非常有用。</p>
 
 <p>如果您需要更多的自定义，并且希望自己做所有事情请在<code class="language-plaintext highlighter-rouge">customize.sh</code>中标注<code class="language-plaintext highlighter-rouge">SKIPUNZIP=1</code>以跳过提取操作并应用默认permissions/secontext。请注意，这样做后，你的<code class="language-plaintext highlighter-rouge">customize.sh</code>将负责自行安装所有内容。</p>
 
-<h4 id="customizesh-environment"><code class="language-plaintext highlighter-rouge">customize.sh</code>的运行环境<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#customizesh-environment" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<h4 id="customizesh-environment"><code class="language-plaintext highlighter-rouge">customize.sh</code>的运行环境<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#customizesh-environment" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
 
 <p>这个脚本将在启用了“独立模式”Magisk的BusyBox <code class="language-plaintext highlighter-rouge">ash</code> shell 中运行。为了方便起见，可以使用以下变量和shell函数:</p>
 
@@ -210,7 +210,7 @@ set_perm_recursive &lt;目录&gt; &lt;所有者&gt; &lt;用户组&gt; &lt;目录
        set_perm 目录 所有者 用户组 目录权限 上下文
 </code></pre></div></div>
 
-<h5 id="easy-replace">简单的替换<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#easy-replace" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h5>
+<h5 id="easy-replace">简单的替换<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#easy-replace" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h5>
 <p>您可以在变量名中声明要直接替换的文件夹列表<code class="language-plaintext highlighter-rouge">REPLACE</code>。模块安装程序脚本将提取此变量并创建<code class="language-plaintext highlighter-rouge">.replace</code>文件进行替换。声明示例:</p>
 
 <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>REPLACE="
@@ -220,7 +220,7 @@ set_perm_recursive &lt;目录&gt; &lt;所有者&gt; &lt;用户组&gt; &lt;目录
 </code></pre></div></div>
 <p>上面的列表将导致创建以下文件: <code class="language-plaintext highlighter-rouge">$MODPATH/system/app/YouTube/.replace</code>和<code class="language-plaintext highlighter-rouge">$MODPATH/system/app/Bloatware/.replace</code></p>
 
-<h4 id="notes">笔记<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#notes" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<h4 id="notes">笔记<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#notes" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
 
 <ul>
   <li>使用Magisk Manager下载模块时，将使用最新的<a href="https://github.com/topjohnwu/Magisk/blob/master/scripts/module_installer.sh"><code class="language-plaintext highlighter-rouge">module_installer.sh</code></a><strong>强制</strong>替换<code class="language-plaintext highlighter-rouge">update-binary</code>，以确保所有安装程序都使用最新的脚本。<strong>不要</strong>不要试图在<code class="language-plaintext highlighter-rouge">update-binary</code>中添加任何自定义逻辑，因为这毫无意义。</li>
@@ -228,7 +228,7 @@ set_perm_recursive &lt;目录&gt; &lt;所有者&gt; &lt;用户组&gt; &lt;目录
   <li><strong>不要</strong>在<code class="language-plaintext highlighter-rouge">customize.sh</code>末尾使用<code class="language-plaintext highlighter-rouge">exit</code>。模块安装程序将会自行完成。</li>
 </ul>
 
-<h2 id="submit-modules">提交模块<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#submit-modules" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="submit-modules">提交模块<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#submit-modules" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
 <p>你可以将模块提交到<a href="https://github.com/Magisk-Modules-Repo/submission"><code class="language-plaintext highlighter-rouge">Magisk-Module-Repo</code></a>以便用户可以直接在Magisk Manager中下载你的模块。</p>
 
@@ -239,15 +239,15 @@ set_perm_recursive &lt;目录&gt; &lt;所有者&gt; &lt;用户组&gt; &lt;目录
   <li>通过此链接创建提交请求: <a href="https://github.com/Magisk-Modules-Repo/submission">提交</a></li>
 </ul>
 
-<h2 id="module-tricks">模块技巧<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#module-tricks" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="module-tricks">模块技巧<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#module-tricks" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
-<h4 id="remove-files">删除文件<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#remove-files" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<h4 id="remove-files">删除文件<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#remove-files" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
 <p>如何自动删除文件？实际使文件删除很复杂(可能，不值得付出努力)。用空文件替换它应该已经足够了！创建一个具有相同名称的空文件，并将其放置在模块内的相同路径中，它将用空文件替换你的目标文件。</p>
 
-<h4 id="remove-folders">删除文件夹<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#remove-folders" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
+<h4 id="remove-folders">删除文件夹<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#remove-folders" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h4>
 <p>与上述相同，实际上使文件夹删除是不值得的。用一个空文件夹替换它应该已经足够了！对于模块开发人员来说，一个方便的技巧是将要删除的文件夹添加到<code class="language-plaintext highlighter-rouge">customize.sh</code>中的<code class="language-plaintext highlighter-rouge">REPLACE</code>列表中。如果您的模块没有提供相应的文件夹，它将创建一个空文件夹，并自动将<code class="language-plaintext highlighter-rouge">.replace</code>添加到该空文件夹中，以便虚拟文件夹可以正确替换<code class="language-plaintext highlighter-rouge">/system</code>中的一个文件夹。</p>
 
-<h2 id="boot-scripts">启动脚本<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#boot-scripts" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="boot-scripts">启动脚本<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#boot-scripts" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
 <p>在Magisk中，您可以以两种不同的模式运行启动脚本: <strong>post-fs-data</strong>和<strong>late_start service</strong>模式</p>
 
@@ -291,7 +291,7 @@ set_perm_recursive &lt;目录&gt; &lt;所有者&gt; &lt;用户组&gt; &lt;目录
 
 <p>这些脚本将在启用了“独立模式”Magisk的BusyBox <code class="language-plaintext highlighter-rouge">ash</code> shell中运行.</p>
 
-<h2 id="root-directory-overlay-system">根目录覆盖系统<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/guides.html#root-directory-overlay-system" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="root-directory-overlay-system">根目录覆盖系统<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/guides.html#root-directory-overlay-system" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
 <p>由于<code class="language-plaintext highlighter-rouge">/</code>在system-as-root设备上是只读的, 因此Magisk提供了一个覆盖系统，使开发人员可以替换根目录中的文件或添加新的<code class="language-plaintext highlighter-rouge">*.rc</code>脚本。此功能主要是为自定义内核开发人员设计的。</p>
 
