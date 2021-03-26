@@ -28,9 +28,9 @@
 
       <h1 id="internal-details">内部细节</h1>
 
-<h2 id="file-structure">文件结构<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/details.html#file-structure" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="file-structure">文件结构<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#file-structure" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
-<h3 id="paths-in-magisk-tmpfs-directory">“Magisk tmpfs目录”中的路径<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/details.html#paths-in-magisk-tmpfs-directory" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<h3 id="paths-in-magisk-tmpfs-directory">“Magisk tmpfs目录”中的路径<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#paths-in-magisk-tmpfs-directory" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
 
 <p>Magisk挂载一个<code class="language-plaintext highlighter-rouge">tmpfs</code> 目录来存储一些临时数据。对于具有<code class="language-plaintext highlighter-rouge">/sbin</code>文件夹的设备，将选择它，因为它将用作将二进制文件注入<code class="language-plaintext highlighter-rouge">PATH</code>的覆盖层。从Android 11 开始，<code class="language-plaintext highlighter-rouge">/sbin</code>可能不存在，所以Magisk将在<code class="language-plaintext highlighter-rouge">/dev</code>下随机创建一个文件夹并将其用作基本文件夹。</p>
 
@@ -73,7 +73,7 @@ $MAGISKTMP/block
 $MAGISKTMP/rootdir
 </code></pre></div></div>
 
-<h3 id="paths-in-data"><code class="language-plaintext highlighter-rouge">/data</code>中的路径<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/details.html#paths-in-data" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<h3 id="paths-in-data"><code class="language-plaintext highlighter-rouge">/data</code>中的路径<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#paths-in-data" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
 
 <p>一些二进制文件和文件应存储在<code class="language-plaintext highlighter-rouge">/data</code>.的非易失性存储中。为了防止被检测到，所有东西都必须存储在安全的地方，并且在<code class="language-plaintext highlighter-rouge">/data</code>中无法被检测到。选择该文件夹<code class="language-plaintext highlighter-rouge">/data/adb</code>是因为具有以下优点:</p>
 
@@ -110,9 +110,9 @@ DATABIN=$SECURE_DIR/magisk
 
 </code></pre></div></div>
 
-<h2 id="magisk-booting-process">Magisk启动过程<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/details.html#magisk-booting-process" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="magisk-booting-process">Magisk启动过程<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#magisk-booting-process" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
-<h3 id="pre-init">预初始化<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/details.html#pre-init" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<h3 id="pre-init">预初始化<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#pre-init" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
 
 <p><code class="language-plaintext highlighter-rouge">magiskinit</code>将替换<code class="language-plaintext highlighter-rouge">init</code>作为第一个要运行的进程。</p>
 
@@ -125,15 +125,15 @@ DATABIN=$SECURE_DIR/magisk
   <li>执行初始<code class="language-plaintext highlighter-rouge">init</code>以继续引导进程</li>
 </ul>
 
-<h3 id="post-fs-data">post-fs-data<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/details.html#post-fs-data" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<h3 id="post-fs-data">post-fs-data<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#post-fs-data" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
 
 <p>当<code class="language-plaintext highlighter-rouge">/data</code>被解密和挂载时，这会在<code class="language-plaintext highlighter-rouge">post-fs-data</code>上触发。将启动守护进程<code class="language-plaintext highlighter-rouge">magiskd</code>，执行post-fs-data脚本，并magic挂载模块文件</p>
 
-<h3 id="late_start">late_start<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/details.html#late_start" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
+<h3 id="late_start">late_start<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#late_start" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h3>
 
 <p>在启动过程的后期，<code class="language-plaintext highlighter-rouge">late_start</code>将被触发，Magisk“服务”模式将被启动。在此模式下，执行服务脚本。</p>
 
-<h2 id="resetprop">Resetprop<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/details.html#resetprop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="resetprop">Resetprop<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#resetprop" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
 <p>通常，系统属性被设计为只能通过<code class="language-plaintext highlighter-rouge">init</code>来更新，并且对于非根进程是只读的。使用root可以通过使用诸如<code class="language-plaintext highlighter-rouge">setprop</code>之类的命令向 <code class="language-plaintext highlighter-rouge">property_service</code>（由<code class="language-plaintext highlighter-rouge">init</code>托管）发送请求来更改属性，但是仍然禁止更改只读属性（以<code class="language-plaintext highlighter-rouge">ro.</code>开头的属性，例如<code class="language-plaintext highlighter-rouge">ro.build.product</code>）和删除属性。</p>
 
@@ -141,33 +141,33 @@ DATABIN=$SECURE_DIR/magisk
 
 <ul>
   <li><code class="language-plaintext highlighter-rouge">on property:foo=bar</code> 如果属性更改没有通过<code class="language-plaintext highlighter-rouge">property_service</code>进行，则不会触发<code class="language-plaintext highlighter-rouge">*.rc</code>脚本。<code class="language-plaintext highlighter-rouge">resetprop</code>的默认设置属性行为与<code class="language-plaintext highlighter-rouge">setprop</code>匹配，这将触发事件(通过首先删除属性，然后通过<code class="language-plaintext highlighter-rouge">property_service</code>设置它来实现)。如果需要这种特殊行为，可以使用<code class="language-plaintext highlighter-rouge">-n</code>标记禁用它。</li>
-  <li>persist properties (props that starts with <code class="language-plaintext highlighter-rouge">persist.</code>, like <code class="language-plaintext highlighter-rouge">persist.sys.usb.config</code>) are stored in both <code class="language-plaintext highlighter-rouge">prop_area</code> and <code class="language-plaintext highlighter-rouge">/data/property</code>. By default, deleting props will <strong>NOT</strong> remove it from persistent storage, meaning the property will be restored after the next reboot; reading props will <strong>NOT</strong> read from persistent storage, as this is the behavior of <code class="language-plaintext highlighter-rouge">getprop</code>. With the flag <code class="language-plaintext highlighter-rouge">-p</code>, deleting props will remove the prop in <strong>BOTH</strong> <code class="language-plaintext highlighter-rouge">prop_area</code> and <code class="language-plaintext highlighter-rouge">/data/property</code>, and reading props will be read from <strong>BOTH</strong> <code class="language-plaintext highlighter-rouge">prop_area</code> and persistent storage.</li>
+  <li>持久性属性(以<code class="language-plaintext highlighter-rouge">persist.</code>开头的props，例如<code class="language-plaintext highlighter-rouge">persist.sys.usb.config</code>)都储存在<code class="language-plaintext highlighter-rouge">prop_area</code>和<code class="language-plaintext highlighter-rouge">/data/property</code>中。默认情况下，删除props<strong>不会</strong>从持久存储中删除它，这意味着属性将在下一次重启后恢复;读取props<strong>不会</strong>从持久存储中读取，这是因为<code class="language-plaintext highlighter-rouge">getprop</code>的进程。使用<code class="language-plaintext highlighter-rouge">-p</code>标志，删除props将同时删除<code class="language-plaintext highlighter-rouge">prop_area</code>和<code class="language-plaintext highlighter-rouge">/data/property</code>, 的props，读取props将同时从<code class="language-plaintext highlighter-rouge">prop_area</code>和持久存储中读取。</li>
 </ul>
 
-<h2 id="magic-mount">Magic Mount<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/details.html#magic-mount" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="magic-mount">Magic挂载<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#magic-mount" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
-<p>The details of the actual implementation and algorithm of Magic Mount is omitted here, please directly dive into the source code if interested (<code class="language-plaintext highlighter-rouge">core/module.cpp</code>).</p>
+<p>Magic挂载的实际实现和算法的细节在这里被省略了，如果有兴趣，请直接钻研源代码(<code class="language-plaintext highlighter-rouge">core/module.cpp</code>)。</p>
 
-<p>Even though the mounting logic is very complicated, the final result of Magic Mount is actually pretty simple. For each module, the folder <code class="language-plaintext highlighter-rouge">$MODPATH/system</code> will be recursively merged into the real <code class="language-plaintext highlighter-rouge">/system</code>; that is: existing files in the real system will be replaced by the one in modules’ system, and new files in modules’ system will be added to the real system.</p>
+<p>尽管安装逻辑非常复杂，但Magic挂载的最终结果实际上非常简单。对于每个模块，目录<code class="language-plaintext highlighter-rouge">$MODPATH/system</code>将被递归地合并到真实的<code class="language-plaintext highlighter-rouge">/system</code>中;即:将真实system中的现有文件替换为模块“system”中的文件，并将模块“system”中的新文件添加到真实system中。</p>
 
-<p>There is one additional trick you can use: if you place an empty file named <code class="language-plaintext highlighter-rouge">.replace</code> in any of the folders in a module’s system, instead of merging the contents, that folder will directly replace the one in the real system. This will be very handy in some cases, for example swapping out a system app.</p>
+<p>你还可以使用一个额外的技巧:如果你在模块系统的任何文件夹中放置一个名为<code class="language-plaintext highlighter-rouge">.replace</code>的空文件，而不是合并内容，该文件夹将直接替换实际系统中的文件。在某些情况下，这将非常方便，例如交换一个系统应用程序。</p>
 
-<p>If you want to replace files in <code class="language-plaintext highlighter-rouge">/vendor</code> or <code class="language-plaintext highlighter-rouge">/product</code>, please place them under <code class="language-plaintext highlighter-rouge">$MODPATH/system/vendor</code> or <code class="language-plaintext highlighter-rouge">$MODPATH/system/product</code>. Magisk will transparently handle both cases, whether vendor or product is a separate partition or not.</p>
+<p>如果你想替换<code class="language-plaintext highlighter-rouge">/vendor</code>或<code class="language-plaintext highlighter-rouge">/product</code>目录下的文件，请将它们放在<code class="language-plaintext highlighter-rouge">$MODPATH/system/vendor</code>或<code class="language-plaintext highlighter-rouge">$MODPATH/system/product</code>目录下。Magisk将透明地处理这两种情况，无论vendor或product是否是一个单独的分区。</p>
 
-<h2 id="selinux-policies">SELinux Policies<a class="anchorjs-link " href="https://e7kmbb.github.io/Magisk/details.html#selinux-policies" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
+<h2 id="selinux-policies">SELinux策略<a class="anchorjs-link " href="https://topjohnwu.github.io/Magisk/details.html#selinux-policies" aria-label="Anchor" data-anchorjs-icon="" style="font: 1em / 1 anchorjs-icons; padding-left: 0.375em;"></a></h2>
 
-<p>Magisk will patch the stock <code class="language-plaintext highlighter-rouge">sepolicy</code> to make sure root and Magisk operations can be done in a safe and secure way. The new domain <code class="language-plaintext highlighter-rouge">magisk</code> is effectively permissive, which is what <code class="language-plaintext highlighter-rouge">magiskd</code> and all root shell will run in. <code class="language-plaintext highlighter-rouge">magisk_file</code> is a new file type that is setup to be allowed to be accessed by every domain (unrestricted file context).</p>
+<p>Magisk将修补<code class="language-plaintext highlighter-rouge">sepolicy</code>，以确保root和Magisk操作可以以安全的方式进行。新的域<code class="language-plaintext highlighter-rouge">magisk</code>是有效的，<code class="language-plaintext highlighter-rouge">magiskd</code>和所有的root shell都将运行在这个域中。 <code class="language-plaintext highlighter-rouge">magisk_file</code>是一种新的文件类型，它被设置为允许每个域(不受限制的文件上下文)访问。</p>
 
-<p>Before Android 8.0, all allowed su client domains are allowed to directly connect to <code class="language-plaintext highlighter-rouge">magiskd</code> and establish connection with the daemon to get a remote root shell. Magisk also have to relax some <code class="language-plaintext highlighter-rouge">ioctl</code> operations so root shells can function properly.</p>
+<p>在Android 8.0之前，所有允许的su客户端域都允许直接连接到<code class="language-plaintext highlighter-rouge">magiskd</code>，并与守护进程建立连接以获得远程root shell。Magisk还必须放宽一些<code class="language-plaintext highlighter-rouge">ioctl</code>操作，这样root shell才能正常工作。</p>
 
-<p>After Android 8.0, to reduce relaxation of rules in Android’s sandbox, a new SELinux model is deployed. The <code class="language-plaintext highlighter-rouge">magisk</code> binary is labelled with <code class="language-plaintext highlighter-rouge">magisk_exec</code> file type, and processes running as allowed su client domains executing the <code class="language-plaintext highlighter-rouge">magisk</code> binary (this includes the <code class="language-plaintext highlighter-rouge">su</code> command) will transit to <code class="language-plaintext highlighter-rouge">magisk_client</code> by using a <code class="language-plaintext highlighter-rouge">type_transition</code> rule. Rules strictly restrict that only <code class="language-plaintext highlighter-rouge">magisk</code> domain processes are allowed to attribute files to <code class="language-plaintext highlighter-rouge">magisk_exec</code>. Direct connection to sockets of <code class="language-plaintext highlighter-rouge">magiskd</code> are not allowed; the only way to access the daemon is through a <code class="language-plaintext highlighter-rouge">magisk_client</code> process. These changes allow us to keep the sandbox intact, and keep Magisk specific rules separated from the rest of the policies.</p>
+<p>在Android 8.0之后，为了减少对Android沙箱中规则的放宽，我们部署了一个新的SELinux模型。<code class="language-plaintext highlighter-rouge">magisk</code>二进制文件被标记为<code class="language-plaintext highlighter-rouge">magisk_exec</code>类型文件，作为允许的su客户端域运行的进程执行<code class="language-plaintext highlighter-rouge">magisk</code>二进制文件(包括<code class="language-plaintext highlighter-rouge">su</code>命令)将通过使用<code class="language-plaintext highlighter-rouge">magisk_client</code>规则传输到<code class="language-plaintext highlighter-rouge">type_transition</code>。规则严格限制只有<code class="language-plaintext highlighter-rouge">magisk</code>域进程才允许将文件归为<code class="language-plaintext highlighter-rouge">magisk_exec</code>。不允许直接连接<code class="language-plaintext highlighter-rouge">magiskd</code>的接口;访问这个守护进程的唯一方法是通过<code class="language-plaintext highlighter-rouge">magisk_client</code>进程。这些更改使我们可以保持沙盒的完整性，并将Magisk特定的规则与其他策略分开。</p>
 
-<p>The full set of rules can be found in <code class="language-plaintext highlighter-rouge">magiskpolicy/rules.cpp</code>.</p>
+<p>完整的规则集可以在<code class="language-plaintext highlighter-rouge">magiskpolicy/rules.cpp</code>中找到。</p>
 
 
       
       <div class="footer border-top border-gray-light mt-5 pt-3 text-right text-gray">
-        This site is open source. <a href="https://github.com/topjohnwu/Magisk/edit/master/docs/details.md">Improve this page</a>.
+        这个网页是开源的。 <a href="https://github.com/E7KMbb/E7KMbb.github.io/edit/main/Magisk/details.html">改善此页面</a>.
       </div>
       
     </div>
